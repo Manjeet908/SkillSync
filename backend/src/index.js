@@ -1,13 +1,13 @@
 import 'dotenv/config'
-import express from 'express';
+import connectDB from "./db/index.js";
+import {app} from './app.js'
 
-const app = express();
-const PORT = process.env.PORT || 5000;
-
-app.use(express.json());
-
-app.get('/', (req, res) => {
-    res.send('Local Talent Discovery Platform API is running...');
-});
-
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+connectDB()
+.then(() => {
+    app.listen(process.env.PORT || 8000, () => {
+        console.log(`⚙️ Server is running at port : ${process.env.PORT}`);
+    })
+})
+.catch((err) => {
+    console.log("MONGO db connection failed !!! ", err);
+})
