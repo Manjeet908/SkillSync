@@ -13,6 +13,11 @@ const commentSchema = new Schema({
             message: "Content cannot be empty"
         }
     },
+    type: { 
+        type: String, 
+        enum: ["normal", "feedback"], 
+        default: "normal"
+    },
     post: {
         type: Schema.Types.ObjectId,
         ref: "Post",
