@@ -13,7 +13,9 @@ import {
     updateCoverImage,
     updateWantToBeHired,
     updateSkills,
-    updateLocation
+    updateLocation,
+    forgotPassword,
+    resetPassword
  } from '../controllers/user.controller.js'
 
 const router = Router()
@@ -35,6 +37,8 @@ router.route("/register").post(
 
 router.route("/login").post(loginUser)
 router.route("/refresh-token").post(refreshAccessToken)
+router.post("/forgot-password", forgotPassword)
+router.patch("/reset-password/:token", resetPassword)
 
 
 //secure routes

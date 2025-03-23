@@ -3,6 +3,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
 
 const registerUser = asyncHandler(async(req, res) => {
     // get user details from frontend
@@ -435,6 +437,70 @@ const updateLocation = asyncHandler(async(req, res) => {
     )
 })
 
+const forgotPassword = asyncHandler(async (req, res) => {
+    const { email } = req.body
+
+    const user = await User.findOne({ email })
+    if (!user) {
+        throw new ApiError(404, "User with this email does not exist")
+    }
+
+    const resetToken = jwt.sign(
+        { 
+            email: user.email
+        }, 
+        process.env.RESET_PASSWORD_SECRET, 
+        { 
+            expiresIn: process.env.RESET_PASSWORD_EXPIRY
+        }
+    )
+
+    const resetURL = `${req.protocol}://${req.get("host")}/api/v1/users/reset-password/${resetToken}`
+
+    const transporter = nodemailer.createTransport({
+        service: "Gmail",
+        auth: {
+            user: process.env.EMAIL_USERNAME,
+            pass: process.env.EMAIL_PASSWORD,
+        },
+    })
+
+    const mailOptions = {
+        from: "SkillSync",
+        to: user.email,
+        subject: "Password Reset",
+        text: `Forgot your password? Click here to generate a new password: ${resetURL}\nIf you didn't request a password reset, please ignore this email.`,
+    }
+
+    await transporter.sendMail(mailOptions);
+
+    return res.status(200).json(new ApiResponse(200, {}, "Token sent to email"));
+})
+
+const resetPassword = asyncHandler(async (req, res) => {
+    const { token } = req.params
+    const { password } = req.body
+
+    let decoded
+    try {
+        decoded = jwt.verify(token, process.env.RESET_PASSWORD_SECRET)
+    } catch (error) {
+        throw new ApiError(400, "Token is invalid or has expired")
+    }
+
+    const user = await User.findOne({ 
+        email: decoded.email 
+    });
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    user.password = password;
+    await user.save();
+
+    return res.status(200).json(new ApiResponse(200, {}, "Password reset successful"));
+})
+
 export { 
     registerUser,
     loginUser,
@@ -447,5 +513,7 @@ export {
     updateCoverImage,
     updateWantToBeHired,
     updateSkills,
-    updateLocation
+    updateLocation,
+    forgotPassword,
+    resetPassword
 }
