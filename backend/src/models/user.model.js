@@ -35,11 +35,11 @@ const userSchema = new Schema(
             trim: true,
             maxLength: 250
         },
-        role: { 
-            type: String, 
-            enum: ["creator", "user"], 
-            default: "user" 
-        },
+        // role: { 
+        //     type: String, 
+        //     enum: ["creator", "user"], 
+        //     default: "user" 
+        // }, include role if you want to have different roles, currently we have only one role
         location: {
             type: {
                 type: String,
