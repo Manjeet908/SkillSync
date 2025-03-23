@@ -31,9 +31,9 @@ const registerUser = asyncHandler(async(req, res) => {
 
     if( 
         [username, email, fullName, password].some((field) => (
-        field?.trim() === ""))
+        field?.trim() === "" || !field))
     ) {
-        throw new ApiError(400, "All fields are required")
+        throw new ApiError(400, `username, email, fullName, password all are required`)
     }
     
     const existingUser = await User.findOne({
@@ -221,10 +221,231 @@ const refreshAccessToken = asyncHandler(async(req, res) => {
 
 })
 
+const changePassword = asyncHandler(async(req, res) => {
+
+    const { oldPassword, newPassword } = req.body
+
+    const user = await User.findById(req.user?._id)
+
+    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
+
+    if(!isPasswordCorrect)
+        throw new ApiError(400, "Invalid Old Password")
+
+    user.password = newPassword
+    await user.save({validateBeforeSave: false})
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {},
+            "Password Updated Successfully"
+        )
+    )
+
+})
+
+const getCurrentUser = asyncHandler(async(req, res) => {
+    // if user is logged out, handle undefined at frontend
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            req.user,
+            "Current User Sent"
+        )
+    )
+})
+
+const updateAccountDetails = asyncHandler(async(req, res) => {
+    const { fullName, email, bio } = req.body
+
+    if (!fullName && !email && !bio) {
+        throw new ApiError(400, "No fields provided to update")
+    }
+
+    const user = await User.findById(req.user?._id).select("-password")
+
+    if(!user) {
+        throw new ApiError(400, "Unable to fetch User")
+    }
+
+    if(fullName) {
+        user.fullName = fullName
+    }
+    if(email) {
+        user.email = email
+    }
+    if(bio) {
+        user.bio = bio
+    }
+
+    await user.save({validateBeforeSave: false})
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Account details updated successfully"))
+})
+
+const updateAvatar = asyncHandler(async(req, res) => {
+    
+    const avatarLocalPath = req.file?.path
+    if(!avatarLocalPath)
+        throw new ApiError(404, "Avatar File Not Found")
+
+    const newAvatar = await uploadOnCloudinary(avatarLocalPath)
+    if(!newAvatar)
+        throw new ApiError(500, "Internal Error while uploading avatar on Cloudinary")
+
+    const user = await User.findById(req.user?._id)
+    if(!user)
+        throw new ApiError(400, "Invalid User Id")
+
+    if(user.avatar)
+        await deleteFromCloudinary(user.avatar)
+
+    user.avatar = newAvatar.url
+    await user.save({validateBeforeSave: false})
+
+    const userObject = user.toObject()
+    delete userObject.password
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            userObject,
+            "Avatar Updated Successfully"
+        )
+    )
+
+})
+
+const updateCoverImage = asyncHandler(async(req, res) => {
+    
+    const coverImageLocalPath = req?.file?.path
+    if(!coverImageLocalPath)
+        throw new ApiError(404, "Cover Image File Not Found")
+
+    const newCoverImage = await uploadOnCloudinary(coverImageLocalPath)
+    if(!newCoverImage)
+        throw new ApiError(500, "Internal Error while uploading Cover Image on Cloudinary")
+
+    const user = await User.findById(req.user._id)
+    if(!user)
+        throw new ApiError(400, "Invalid User Id")
+
+    if(user.coverImage)
+        await deleteFromCloudinary(user.coverImage)
+
+    user.coverImage = newCoverImage.url
+    await user.save({validateBeforeSave: false})
+
+    const userObject = user.toObject()
+    delete userObject.password
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            userObject,
+            "Cover Image Updated Successfully"
+        )
+    )
+
+})
+
+const updateWantToBeHired = asyncHandler(async(req, res) => {
+    const { wantToBeHired } = req.body
+
+    if(wantToBeHired === undefined)
+        throw new ApiError(400, "wantToBeHired field is required")
+
+    const user = await User.findById(req.user._id).select("-password")
+    if(!user)
+        throw new ApiError(500, "Unable to fetch User Id")
+
+    if(user.wantToBeHired !== wantToBeHired) {
+        user.wantToBeHired = wantToBeHired
+        await user.save({validateBeforeSave: false})
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            user,
+            "wantToBeHired field updated successfully"
+        )
+    )
+})
+
+const updateSkills = asyncHandler(async(req, res) => {
+    const { skills } = req.body
+
+    if(!skills || !Array.isArray(skills) || skills.length === 0)
+        throw new ApiError(400, "skills field is required")
+
+    const user = await User.findById(req.user._id).select("-password")
+    if(!user)
+        throw new ApiError(500, "Unable to fetch User Id")
+
+    // provide valid skills array, don't provide only newly added skills, provide all skills 
+    user.skills = skills
+    await user.save({validateBeforeSave: false})
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            user,
+            "Skills updated successfully"
+        )
+    )
+})
+
+const updateLocation = asyncHandler(async(req, res) => {
+    const { location } = req.body
+
+    if(!location || !Array.isArray(location) || location.length !== 2)
+        throw new ApiError(400, "location field is required")
+
+    const user = await User.findById(req.user._id).select("-password")
+    if(!user)
+        throw new ApiError(500, "Unable to fetch User Id")
+
+    user.location = { type: "Point", coordinates: location }
+    await user.save({validateBeforeSave: false})
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            user,
+            "Location updated successfully"
+        )
+    )
+})
 
 export { 
     registerUser,
     loginUser,
     logoutUser,
-    refreshAccessToken
+    refreshAccessToken,
+    changePassword,
+    getCurrentUser,
+    updateAccountDetails,
+    updateAvatar,
+    updateCoverImage,
+    updateWantToBeHired,
+    updateSkills,
+    updateLocation
 }
