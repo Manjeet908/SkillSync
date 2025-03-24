@@ -454,7 +454,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
             expiresIn: process.env.RESET_PASSWORD_EXPIRY
         }
     )
-
+    // provide frontend url instead of api/v1/users/reset-password
     const resetURL = `${req.protocol}://${req.get("host")}/api/v1/users/reset-password/${resetToken}`
 
     const transporter = nodemailer.createTransport({
@@ -476,6 +476,15 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
     return res.status(200).json(new ApiResponse(200, {}, "Token sent to email"));
 })
+
+/*
+frontend:
+const { token } = useParams()
+const res = await axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/api/v1/users/reset-password/${token}`,
+    { password }
+)
+*/
 
 const resetPassword = asyncHandler(async (req, res) => {
     const { token } = req.params
@@ -501,6 +510,99 @@ const resetPassword = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, {}, "Password reset successful"));
 })
 
+// testing required
+const getUserProfile = asyncHandler(async(req, res) => {
+    const {username} = req.params
+
+    if (!username?.trim()) {
+        throw new ApiError(400, "username is missing")
+    }
+
+    const userProfile = await User.aggregate([
+        {
+            $match: {
+                username: username?.toLowerCase()
+            }
+        },
+        {
+            $lookup: {
+                from: "follows",
+                localField: "_id",
+                foreignField: "creator",
+                as: "followers"
+            }
+        },
+        {
+            $lookup: {
+                from: "follows",
+                localField: "_id",
+                foreignField: "follower",
+                as: "followings"
+            }
+        },
+        {
+            $addFields: {
+                followersCount: {
+                    $size: "$followers"
+                },
+                followingsCount: {
+                    $size: "$followings"
+                },
+                isFollowed: {
+                    $cond: {
+                        if: {$in: [req.user?._id, "$followers.follower"]},
+                        then: true,
+                        else: false
+                    }
+                },
+                // testing required                
+                canEmailNotify: {
+                    $cond: {
+                        if: {
+                            $and: [
+                                { $in: [req.user?._id, "$followers.follower"] },
+                                { $eq: [true, "$followers.follower.emailNotify"] }
+                            ]
+                        },
+                        then: true,
+                        else: false
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                fullName: 1,
+                username: 1,
+                followersCount: 1,
+                followingsCount: 1,
+                isFollowed: 1,
+                avatar: 1,
+                coverImage: 1,
+                email: 1,
+                bio: 1,
+                location: 1,
+                skills: 1,
+                wantToBeHired: 1,
+                canEmailNotify: 1
+            }
+        }
+    ])
+
+    // remove later
+    console.log(userProfile)
+
+    if (!userProfile?.length) {
+        throw new ApiError(404, "channel does not exists")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, userProfile[0], "User channel fetched successfully")
+    )
+})
+
 export { 
     registerUser,
     loginUser,
@@ -515,5 +617,6 @@ export {
     updateSkills,
     updateLocation,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    getUserProfile
 }
