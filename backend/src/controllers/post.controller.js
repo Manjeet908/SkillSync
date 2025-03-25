@@ -2,6 +2,7 @@ import { Post } from '../models/post.model.js'
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const createPost = asyncHandler(async (req, res) => {
     const { title, description, category } = req.body
@@ -9,7 +10,7 @@ const createPost = asyncHandler(async (req, res) => {
     if(!title)
         throw new ApiError(400, 'Title is required')
 
-    const files = req.files;
+    const files = req.files.media;
     const fileUrls = [];
 
     if(Array.isArray(files)) {
@@ -18,16 +19,19 @@ const createPost = asyncHandler(async (req, res) => {
             throw new ApiError(400, 'You can upload a maximum of 5 files')
 
         for (const file of files) {
-            const result = await uploadToCloudinary(file.path);
-            fileUrls.push(result.secure_url);
+            const result = await uploadOnCloudinary(file.path);
+            fileUrls.push(result.url);
         }
     }
-        
+    
+    console.log(fileUrls);
+    
+
     const newPost = await Post.create({
         title,
         description,
         category,
-        files: fileUrls,
+        media: fileUrls,
         creator: req.user._id
     })
     
@@ -38,50 +42,28 @@ const createPost = asyncHandler(async (req, res) => {
     )
 })
 
-const hidePost = asyncHandler(async (req, res) => {
+const togglePublish = asyncHandler(async (req, res) => {
     const { id } = req.params
 
     if(!id)
         throw new ApiError(400, 'Post id is required')
 
-    const post = await Post.findByIdAndUpdate(
-        id,
-        { isPublic: false },
-        { new: true }
-    )
+    const post = await Post.findById(id)
 
     if(!post)
         throw new ApiError(404, 'Post not found')
 
-    return res
-    .status(200)
-    .json(
-        new ApiResponse(200, post, 'Post hidden')
-    )
+    if(post.creator.toString() !== req.user._id.toString())
+        throw new ApiError(403, 'You are not authorized to perform this action')
 
-})
-
-const showPost = asyncHandler(async (req, res) => {
-    const { id } = req.params
-
-    if(!id)
-        throw new ApiError(400, 'Post id is required')
-
-    const post = await Post.findByIdAndUpdate(
-        id,
-        { isPublic: true },
-        { new: true }
-    )
-
-    if(!post)
-        throw new ApiError(404, 'Post not found')
+    post.isPublic = !post.isPublic
+    const updatedPost = await post.save()
 
     return res
     .status(200)
     .json(
-        new ApiResponse(200, post, 'Post published')
+        new ApiResponse(200, updatedPost, 'Post updated')
     )
-
 })
 
 const deletePost = asyncHandler(async (req, res) => {
@@ -90,15 +72,19 @@ const deletePost = asyncHandler(async (req, res) => {
     if(!id)
         throw new ApiError(400, 'Post id is required')
 
-    const post = await Post.findByIdAndDelete(id)
-
+    const post = await Post.findById(id)
     if(!post)
         throw new ApiError(404, 'Post not found')
+
+    if(post.creator.toString() !== req.user._id.toString())
+        throw new ApiError(403, 'You are not authorized to perform this action')
+
+    const deletedPost = await post.remove()
 
     return res
     .status(200)
     .json(
-        new ApiResponse(200, post, 'Post deleted')
+        new ApiResponse(200, deletedPost, 'Post deleted')
     )
 
 })
@@ -114,10 +100,13 @@ const getPostById = asyncHandler(async (req, res) => {
     if(!post)
         throw new ApiError(404, 'Post not found')
 
+    if(!post.isPublic)
+        throw new ApiError(403, 'Post is not public')
+
     return res
     .status(200)
     .json(
-        new ApiResponse(200, post)
+        new ApiResponse(200, post, 'Post found')
     )
 })
 
@@ -129,18 +118,48 @@ const getAllPosts = asyncHandler(async (req, res) => {
         limit: parseInt(limit, 10) || 10
     };
 
-    const postAggregate = Post.aggregate([]);
-    const posts = await Post.aggregatePaginate(postAggregate, options);
+    const posts = await Post.aggregatePaginate(
+        Post.aggregate([ 
+            {
+                $match: { isPublic: true }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "creator",
+                    foreignField: "_id",
+                    as: "creator"
+                }
+            },
+            {
+                $unwind: "$creator"
+            },
+            {
+                $project: {
+                    "creator.password": 0,
+                    "creator.email": 0
+                }
+            },
+            {
+                $sort: { createdAt: -1 }
+            }
+        ]), 
+        options
+    );
 
-    return res.status(200).json(new ApiResponse(200, posts));
-})
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, posts, "Posts fetched")
+    );
+});
 
 
+// getUserPosts to get unpublished posts of the owner
 
 export {
     createPost,
-    hidePost,
-    showPost,
+    togglePublish,
     deletePost,
     getPostById,
     getAllPosts

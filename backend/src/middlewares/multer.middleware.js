@@ -1,4 +1,6 @@
 import multer from "multer";
+import path from "path";
+import { ApiError } from "../utils/ApiError.js";
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -17,7 +19,9 @@ const fileFilter = (req, file, cb) => {
   if (mimetype && extname) {
       return cb(null, true);
   } else {
-      cb(new ApiError(400, 'Invalid file type. Only images, videos and audios are allowed.'));
+      cb(
+        new ApiError(400, 'Invalid file type. Only images, videos and audios are allowed.')
+      );
   }
 }
   
