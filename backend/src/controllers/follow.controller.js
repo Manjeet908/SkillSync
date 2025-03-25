@@ -26,7 +26,9 @@ const toggleFollow = asyncHandler(async (req, res) => {
     
             return res
             .status(200)
-            .json(ApiResponse(200, unfollow, "Unfollowed successfully"))
+            .json(
+                new ApiResponse(200, unfollow, "Unfollowed successfully")
+            )
         }
         else{
             const follow = await Follow.create({creator: creatorId, follower: user._id})
@@ -37,7 +39,9 @@ const toggleFollow = asyncHandler(async (req, res) => {
     
             return res
             .status(200)
-            .json(ApiResponse(200, follow, "Followed successfully"))
+            .json(
+                new ApiResponse(200, follow, "Followed successfully")
+            )
         }
     } catch (error) {
         throw new ApiError(500, error.message || "There was a problem while following/unfollowing")
@@ -71,7 +75,9 @@ const toggleEmailNotify = asyncHandler(async (req, res) => {
     
         return res
         .status(200)
-        .json(ApiResponse(200, updatedFollow, "Email notification updated successfully"))
+        .json(
+            new ApiResponse(200, updatedFollow, "Email notification updated successfully")
+        )
     } catch (error) {
         throw new ApiError(500, error.message || "There was a problem while updating email notification")        
     }
@@ -95,7 +101,9 @@ const getCreatorFollowers = asyncHandler(async (req, res) => {
     
         return res
         .status(200)
-        .json(ApiResponse(200, followers, "Followers found successfully"))
+        .json(
+            new ApiResponse(200, followers, "Followers found successfully")
+        )
     } catch (error) {
         throw new ApiError(500, error.message || "There was a problem while fetching followers")
     }
@@ -104,10 +112,10 @@ const getCreatorFollowers = asyncHandler(async (req, res) => {
 
 const getUserFollowings = asyncHandler(async (req, res) => {
 
-    const user = req.user
+    const {userId} = req.params
 
     try {
-        const followings = await Follow.find({follower: user._id}).populate("creator")
+        const followings = await Follow.find({follower: userId}).populate("creator")
     
         // only null throws error, empty array is truthy in JS therefore it works fine for 0 size
         if(!followings){
@@ -116,9 +124,11 @@ const getUserFollowings = asyncHandler(async (req, res) => {
     
         return res
         .status(200)
-        .json(ApiResponse(200, followings, "Followings found successfully"))
+        .json(
+            new ApiResponse(200, followings, "Followings found successfully")
+        )
     } catch (error) {
-        throw new ApiError(500, error.message || "There was a problem while fetching followings")
+        throw new ApiError(500, error?.message || "There was a problem while fetching followings")
     }
     
     

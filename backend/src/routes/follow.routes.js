@@ -11,7 +11,7 @@ const router = Router();
 
 // public routes, change if required
 router.route("/get-creator-followers/:creatorId").get(getCreatorFollowers);
-router.route("/get-user-followings").get(getUserFollowings);
+router.route("/get-user-followings/:userId").get(getUserFollowings);
 
 // secure routes
 router.route("/toggle-follow/:creatorId").post(verifyJWT, toggleFollow);
