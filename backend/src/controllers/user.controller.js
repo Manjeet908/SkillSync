@@ -4,7 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
+import sendEmail from "../utils/sendEmail.js";
 
 const registerUser = asyncHandler(async(req, res) => {
     // get user details from frontend
@@ -105,6 +105,7 @@ const generateAccessAndRefreshToken = async(userId) => {
 }
 
 const secureCookie = {
+    expires: new Date(Date.now() + process.env.COOKIE_EXPIRY* 24 * 60 * 60 * 1000),
     httpOnly: true,
     secure: true
 }
@@ -457,24 +458,29 @@ const forgotPassword = asyncHandler(async (req, res) => {
     // provide frontend url instead of api/v1/users/reset-password
     const resetURL = `${req.protocol}://${req.get("host")}/api/v1/users/reset-password/${resetToken}`
 
-    const transporter = nodemailer.createTransport({
-        service: "Gmail",
-        auth: {
-            user: process.env.EMAIL_USERNAME,
-            pass: process.env.EMAIL_PASSWORD,
-        },
-    })
-
     const mailOptions = {
-        from: "SkillSync",
         to: user.email,
         subject: "Password Reset",
         text: `Forgot your password? Click here to generate a new password: ${resetURL}\nIf you didn't request a password reset, please ignore this email.`,
+        html: `
+            <p>Forgot your password?</p>
+            <p>Click the link below to reset your password:</p>
+            <a href="${resetURL}">Reset Password</a>
+            <p>If you didn't request a password reset, please ignore this email.</p>
+        `
+    };
+
+    const emailStatus = await sendEmail(mailOptions)
+
+    if(!emailStatus) {
+        throw new ApiError(500, "Internal error while sending email")
     }
 
-    await transporter.sendMail(mailOptions);
-
-    return res.status(200).json(new ApiResponse(200, {}, "Token sent to email"));
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, emailStatus, "Token sent to email")
+    );
 })
 
 /*
