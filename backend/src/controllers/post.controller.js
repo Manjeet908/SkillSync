@@ -23,9 +23,6 @@ const createPost = asyncHandler(async (req, res) => {
             fileUrls.push(result.url);
         }
     }
-    
-    console.log(fileUrls);
-    
 
     const newPost = await Post.create({
         title,
@@ -79,7 +76,15 @@ const deletePost = asyncHandler(async (req, res) => {
     if(post.creator.toString() !== req.user._id.toString())
         throw new ApiError(403, 'You are not authorized to perform this action')
 
-    const deletedPost = await post.remove()
+    const files = post.media
+
+    if(Array.isArray(files) && files.length > 0) {
+        for (const file of files) {
+            await cloudinary.uploader.destroy(file);
+        }
+    }
+
+    const deletedPost = await Post.findByIdAndDelete(id)
 
     return res
     .status(200)
@@ -152,15 +157,58 @@ const getAllPosts = asyncHandler(async (req, res) => {
     .json(
         new ApiResponse(200, posts, "Posts fetched")
     );
-});
+})
 
+// getUserPosts to get unpublished/published posts of the owner
+const getUserPosts = asyncHandler(async (req, res) => {
+    const { page = 1, limit = 10 } = req.query;
 
-// getUserPosts to get unpublished posts of the owner
+    const options = {
+        page: parseInt(page, 10) || 1,
+        limit: parseInt(limit, 10) || 10
+    };
+
+    const posts = await Post.aggregatePaginate(
+        Post.aggregate([ 
+            {
+                $match: { creator: req.user?._id }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "creator",
+                    foreignField: "_id",
+                    as: "creator"
+                }
+            },
+            {
+                $unwind: "$creator"
+            },
+            {
+                $project: {
+                    "creator.password": 0,
+                    "creator.email": 0
+                }
+            },
+            {
+                $sort: { createdAt: -1 }
+            }
+        ]), 
+        options
+    );
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, posts, "Posts fetched")
+    );
+})
 
 export {
     createPost,
     togglePublish,
     deletePost,
     getPostById,
-    getAllPosts
+    getAllPosts,
+    getUserPosts
 }

@@ -6,7 +6,8 @@ import {
     togglePublish,
     deletePost,
     getPostById,
-    getAllPosts
+    getAllPosts,
+    getUserPosts
 } from "../controllers/post.controller.js"
 
 const router = Router()
@@ -26,5 +27,6 @@ router.route("/create-post").post(verifyJWT,
 )
 router.route("/toggle-publish/:id").put(verifyJWT, togglePublish)
 router.route("/delete-post/:id").delete(verifyJWT, deletePost)
+router.route("/get-user-posts").get(verifyJWT, getUserPosts)
 
 export default router
