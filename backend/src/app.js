@@ -21,7 +21,7 @@ import postRouter from "./routes/post.routes.js"
 
 app.use("/api/v1/users", userRouter)
 app.use("/api/v1/follow", followRouter)
-app.use("/api/v1/posts", postRouter)
+app.use("/api/v1/posts", postRouter) // testing required
 
 
 export default app
