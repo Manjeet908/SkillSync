@@ -19,16 +19,20 @@ const postSchema = new Schema({
     ],
     category: {
         type: String,
-        required: true,
-        enum: ["web development", "mobile development", "graphic design", "music", "dance", "photography", "art", "writing", "content creation", "other"]
+        enum: ["web development", "mobile development", "graphic design", "music", "dance", "photography", "art", "writing", "content creation", "other"],
+        default: "other"
     },
     creator: {
         type: Schema.Types.ObjectId,
         ref: "user",
         required: true
     },
+    isPublic: {
+        type: Boolean,
+        default: true
+    }
 }, { timestamps: true });
 
 postSchema.plugin(mongooseAggregatePaginate)
 
-export const Post = mongoose.model('post', postSchema)
+export const Post = mongoose.model('Post', postSchema)

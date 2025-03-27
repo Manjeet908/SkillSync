@@ -17,4 +17,4 @@ const followSchema = new Schema({
 }, {timestamps: true})
 
 
-export const Follow = mongoose.model("Like", followSchema)
+export const Follow = mongoose.model("Follow", followSchema)
