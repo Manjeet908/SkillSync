@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import sendEmail from "../utils/sendEmail.js";
 
@@ -516,13 +517,14 @@ const resetPassword = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, {}, "Password reset successful"));
 })
 
-// testing required
 const getUserProfile = asyncHandler(async(req, res) => {
     const {username} = req.params
 
     if (!username?.trim()) {
         throw new ApiError(400, "username is missing")
     }
+
+    const userId = new mongoose.Types.ObjectId(req.user._id);
 
     const userProfile = await User.aggregate([
         {
@@ -556,23 +558,30 @@ const getUserProfile = asyncHandler(async(req, res) => {
                 },
                 isFollowed: {
                     $cond: {
-                        if: {$in: [req.user?._id, "$followers.follower"]},
+                        if: {$in: [userId, "$followers.follower"]},
                         then: true,
                         else: false
                     }
                 },
                 // testing required                
                 canEmailNotify: {
-                    $cond: {
-                        if: {
-                            $and: [
-                                { $in: [req.user?._id, "$followers.follower"] },
-                                { $eq: [true, "$followers.follower.emailNotify"] }
-                            ]
+                    $eq: [
+                        {
+                            $size: {
+                                $filter: {
+                                    input: "$followers",
+                                    as: "f",
+                                    cond: {
+                                        $and: [
+                                            { $eq: ["$$f.follower", userId] },
+                                            { $eq: ["$$f.emailNotify", true] }
+                                        ]
+                                    }
+                                }
+                            }
                         },
-                        then: true,
-                        else: false
-                    }
+                        1
+                    ]
                 }
             }
         },
@@ -595,8 +604,6 @@ const getUserProfile = asyncHandler(async(req, res) => {
         }
     ])
 
-    // remove later
-    console.log(userProfile)
 
     if (!userProfile?.length) {
         throw new ApiError(404, "channel does not exists")

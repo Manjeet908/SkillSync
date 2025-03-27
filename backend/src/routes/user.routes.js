@@ -15,7 +15,8 @@ import {
     updateSkills,
     updateLocation,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    getUserProfile
  } from '../controllers/user.controller.js'
 
 const router = Router()
@@ -52,6 +53,7 @@ router.route("/update-cover-image").put(verifyJWT, upload.single("coverImage"), 
 router.route("/update-want-to-be-hired").put(verifyJWT, updateWantToBeHired)
 router.route("/update-skills").put(verifyJWT, updateSkills)
 router.route("/update-location").put(verifyJWT, updateLocation)
+router.route("/get-user-profile/:username").get(verifyJWT, getUserProfile)
 
 
 export default router
