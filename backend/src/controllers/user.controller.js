@@ -105,7 +105,6 @@ const generateAccessAndRefreshToken = async(userId) => {
 }
 
 const secureCookie = {
-    expires: new Date(Date.now() + process.env.COOKIE_EXPIRY* 24 * 60 * 60 * 1000),
     httpOnly: true,
     secure: true
 }
@@ -493,6 +492,7 @@ const res = await axios.patch(
 */
 
 const resetPassword = asyncHandler(async (req, res) => {
+    // add reset passwrod token clearing
     const { token } = req.params
     const { password } = req.body
 

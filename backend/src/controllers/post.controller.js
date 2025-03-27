@@ -2,7 +2,7 @@ import { Post } from '../models/post.model.js'
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 
 const createPost = asyncHandler(async (req, res) => {
     const { title, description, category } = req.body
@@ -80,7 +80,7 @@ const deletePost = asyncHandler(async (req, res) => {
 
     if(Array.isArray(files) && files.length > 0) {
         for (const file of files) {
-            await cloudinary.uploader.destroy(file);
+            await deleteFromCloudinary(file);
         }
     }
 
