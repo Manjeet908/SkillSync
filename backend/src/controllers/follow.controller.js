@@ -1,18 +1,20 @@
-import {isValidObjectId} from "mongoose"
 import {Follow} from "../models/follow.model.js"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/AsyncHandler.js"
-
+import {User} from "../models/user.model.js"
 
 const toggleFollow = asyncHandler(async (req, res) => {
 
-    const { creatorId } = req.params
+    const { username } = req.params
     const user = req.user
 
-    if (!isValidObjectId(creatorId)) {
-        throw new ApiError(400, "Invalid creator ID");
+    const creator = await User.findOne({username: username}).select("_id")
+    if(!creator){
+        throw new ApiError(404, "Creator not found")
     }
+
+    const creatorId = creator._id
 
     try {
         const isFollowing = await Follow.findOne({creator: creatorId, follower: user._id})
@@ -51,12 +53,15 @@ const toggleFollow = asyncHandler(async (req, res) => {
 
 const toggleEmailNotify = asyncHandler(async (req, res) => {
 
-    const { creatorId } = req.params
+    const { username } = req.params
     const user = req.user
 
-    if (!isValidObjectId(creatorId)) {
-        throw new ApiError(400, "Invalid creator ID");
+    const creator = await User.findOne({username: username}).select("_id")
+    if(!creator){
+        throw new ApiError(404, "Creator not found")
     }
+    
+    const creatorId = creator._id
 
     try {
         const isFollowing = await Follow.findOne({creator: creatorId, follower: user._id})
@@ -85,11 +90,14 @@ const toggleEmailNotify = asyncHandler(async (req, res) => {
 
 const getCreatorFollowers = asyncHandler(async (req, res) => {
 
-    const {creatorId} = req.params
-
-    if (!isValidObjectId(creatorId)) {
-        throw new ApiError(400, "Invalid creator ID");
+    const { username } = req.params
+    const creator = await User.findOne({username: username}).select("_id")
+    if(!creator){
+        throw new ApiError(404, "Creator not found")
     }
+    console.log("creator", creator);
+    
+    const creatorId = creator._id
 
     try {
         const followers = await Follow.find({creator: creatorId}).populate("follower")
@@ -112,7 +120,14 @@ const getCreatorFollowers = asyncHandler(async (req, res) => {
 
 const getUserFollowings = asyncHandler(async (req, res) => {
 
-    const {userId} = req.params
+    const { username } = req.params
+
+    const user = await User.findOne({username: username}).select("_id")
+    if(!user){
+        throw new ApiError(404, "user not found")
+    }
+
+    const userId = user._id
 
     try {
         const followings = await Follow.find({follower: userId}).populate("creator")
