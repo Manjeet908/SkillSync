@@ -1,12 +1,19 @@
 import React from 'react'
 import './Home.css'
+import Sidebar from '../../components/sidebar/sidebar'
+import Feed from '../../components/feed/feed'
+import Rightbar from '../../components/rightbar/rightbar'
+import Topbar from '../../components/topbar/Topbar'
 function Home() {
   return (
-    <div>
-        <h1>Welcome to the Home Page</h1>
-        <p>This is a simple home page for our application.</p>
-        <p>Feel free to explore!</p>
-    </div>
+      <>
+        <Topbar/>
+        <div className="homeContainer">
+          <Sidebar/>
+          <Feed/>
+          <Rightbar/>
+        </div>
+      </>
   )
 }
 
