@@ -1,6 +1,7 @@
 .feed{
     flex : 5.5;
     height: calc(100vh - 50px);
+    position: sticky;
 }
 .feed__wrapper{
     padding: 20px;

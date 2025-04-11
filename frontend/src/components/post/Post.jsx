@@ -1,39 +1,50 @@
-import React from 'react'
-import './Post.css'
-import { MoreVert } from '@mui/icons-material'
-function Post() {
+import "./post.css";
+import { MoreVert } from "@mui/icons-material";
+import { Users } from "../../dummyData";
+import { useState } from "react";
+
+export default function Post({ post }) {
+  const [like,setLike] = useState(post.like)
+  const [isLiked,setIsLiked] = useState(false)
+
+  const likeHandler =()=>{
+    setLike(isLiked ? like-1 : like+1)
+    setIsLiked(!isLiked)
+  }
   return (
-    <div className='post'>
-        <div className="postWrapper">
-            <div className="postTop">
-                <div className="postTopLeft">
-                    <img className='postProfileImg' src="/assets/person/1.jpg" alt="" />
-                    <span className="postUsername">Abdul Kalam</span>
-                    <span className="postDate">5 mins ago</span>
-                </div>
-                <div className="postTopRight">
-                    <MoreVert />
-                </div>
-            </div>
-            <div className="postCentre">
-                <span className="postText">Memories of LSG vs MI</span>
-                <img className='postImg' src="/assets/post/2.jpeg" alt="" />
-            </div>
-            <div className="postBotton">
-                <div className="postBottomLeft">
-                    <img className='likeIcon' src="/assets/post/like.png" alt="" />
-                    <img className='likeIcon' src="/assets/post/like2.png" alt="" />
-                    <span className="postLikeCounter">21 people like it</span>
-                </div>
-                <div className="postBottomRight">
-                    <span className="postCommentText">9 comments</span>
-                </div>
-            </div>
-
+    <div className="post">
+      <div className="postWrapper">
+        <div className="postTop">
+          <div className="postTopLeft">
+            <img
+              className="postProfileImg"
+              src={Users.filter((u) => u.id === post?.userId)[0].profilePicture}
+              alt=""
+            />
+            <span className="postUsername">
+              {Users.filter((u) => u.id === post?.userId)[0].username}
+            </span>
+            <span className="postDate">{post.date}</span>
+          </div>
+          <div className="postTopRight">
+            <MoreVert />
+          </div>
         </div>
-
+        <div className="postCenter">
+          <span className="postText">{post?.desc}</span>
+          <img className="postImg" src={post.photo} alt="" />
+        </div>
+        <div className="postBottom">
+          <div className="postBottomLeft">
+            <img className="likeIcon" src="assets/post/like.png" onClick={likeHandler} alt="" />
+            <img className="likeIcon" src="assets/post/like2.png" onClick={likeHandler} alt="" />
+            <span className="postLikeCounter">{like} people like it</span>
+          </div>
+          <div className="postBottomRight">
+            <span className="postCommentText">{post.comment} comments</span>
+          </div>
+        </div>
+      </div>
     </div>
-  )
+  );
 }
-
-export default Post
