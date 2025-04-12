@@ -1,11 +1,14 @@
 import React from 'react'
 import './Topbar.css'
 import {Search,Person ,Chat,Notifications} from "@mui/icons-material"
+import { Link } from 'react-router-dom';
 function Topbar() {
   return (
     <div className="topbarContainer">
         <div className="topbarLeft">
-            <span className="logo">SKILL SYNC</span>
+            
+                <span className="logo">SKILL SYNC</span>
+        
         </div>
         <div className="topbarCenter">
             <div className="searchbar">
