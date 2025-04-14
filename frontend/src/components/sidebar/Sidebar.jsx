@@ -1,12 +1,23 @@
-import React from 'react'
-import './sidebar.css'
-            <HelpOutline className="sidebarIcon" />
-import { RssFeed,Chat,Group,School,Bookmark,PlayCircleFilledOutlined,Event,HelpOutline,WorkOutline} from '@mui/icons-material'
-function Sidebar() {
+import "./sidebar.css";
+import {
+  RssFeed,
+  Chat,
+  PlayCircleFilledOutlined,
+  Group,
+  Bookmark,
+  HelpOutline,
+  WorkOutline,
+  Event,
+  School,
+} from "@mui/icons-material";
+import { Users } from "../../dummyData";
+import CloseFriend from "../closeFriend/CloseFriend";
+
+export default function Sidebar() {
   return (
-    <div className='sidebar'>
+    <div className="sidebar">
       <div className="sidebarWrapper">
-<ul className="sidebarList">
+        <ul className="sidebarList">
           <li className="sidebarListItem">
             <RssFeed className="sidebarIcon" />
             <span className="sidebarListItemText">Feed</span>
@@ -44,43 +55,14 @@ function Sidebar() {
             <span className="sidebarListItemText">Courses</span>
           </li>
         </ul>
-        <button className="sidebarButton">show more</button>
+        <button className="sidebarButton">Show More</button>
         <hr className="sidebarHr" />
-            <ul className="sidebarFriendList">
-              <li className="sidebarFriend">
-                <img className="sidebarFriendImg" src="/assets/person/1.jpg" alt="" />
-                <span className="sidebarFriendName">abdul kalam</span>
-              </li>
-              <li className="sidebarFriend">
-                <img className="sidebarFriendImg" src="/assets/person/2.jpg" alt="" />
-                <span className="sidebarFriendName">Manjeet</span>
-              </li>
-              <li className="sidebarFriend">
-                <img className="sidebarFriendImg" src="/assets/person/3.jpg" alt="" />
-                <span className="sidebarFriendName">Lokesh kankerwal</span>
-              </li>
-                            <li className="sidebarFriend">
-                <img className="sidebarFriendImg" src="/assets/person/3.jpg" alt="" />
-                <span className="sidebarFriendName">monojit</span>
-              </li>
-                            <li className="sidebarFriend">
-                <img className="sidebarFriendImg" src="/assets/person/3.jpg" alt="" />
-                <span className="sidebarFriendName">deepanshu</span>
-              </li>
-                            <li className="sidebarFriend">
-                <img className="sidebarFriendImg" src="/assets/person/3.jpg" alt="" />
-                <span className="sidebarFriendName">sup</span>
-              </li>
-                            <li className="sidebarFriend">
-                <img className="sidebarFriendImg" src="/assets/person/3.jpg" alt="" />
-                <span className="sidebarFriendName">nisha7</span>
-              </li>
-            </ul>
-
+        <ul className="sidebarFriendList">
+          {Users.map((u) => (
+            <CloseFriend key={u.id} user={u} />
+          ))}
+        </ul>
       </div>
     </div>
-
-  )
+  );
 }
-
-export default Sidebar
