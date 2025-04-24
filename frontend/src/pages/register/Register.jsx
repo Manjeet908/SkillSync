@@ -10,6 +10,7 @@ export default function Register() {
   const password = useRef();
   const passwordAgain = useRef();
   const navigate = useNavigate();
+  const apiUrl = import.meta.env.VITE_APP_API_URL
 
   const handleClick = async (e) => {
     e.preventDefault();
@@ -18,13 +19,13 @@ export default function Register() {
         return;
     }
     const user = {
-        fullname: fullname.current.value,
+        fullName: fullname.current.value,
         username: username.current.value,
         email: email.current.value,
         password: password.current.value,
       };
       try {
-        await axios.post("/auth/register", user);
+        await axios.post(`${apiUrl}/users/register`, user);
         navigate("/login");
       } catch (err) {
         console.log(err);

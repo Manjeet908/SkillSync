@@ -8,13 +8,22 @@ export default function Login() {
   const email = useRef();
   const password = useRef();
   const { isFetching, dispatch } = useContext(AuthContext);
+  const apiUrl = import.meta.env.VITE_APP_API_URL
 
-  const handleClick = (e) => {
+  const handleClick = async(e) => {
     e.preventDefault();
-    loginCall(
-      { email: email.current.value, password: password.current.value },
-      dispatch
-    );
+    const user = {
+      email: email.current.value,
+      password: password.current.value,
+    };
+    try {
+      const res = await axios.post(`${apiUrl}/users/login`, user);
+      console.log(res);
+      
+      dispatch({ type: "LOGIN_SUCCESS", payload: res.data });
+    } catch (err) {
+      dispatch({ type: "LOGIN_FAILURE", payload: err });
+    }
   };
 
   return (
