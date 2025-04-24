@@ -11,14 +11,24 @@ export default function Feed({ username }) {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const res = username
-        ? await axios.get("/posts/profile/" + username)
-        : await axios.get("posts/timeline/" + user._id);
-      setPosts(
-        res.data.sort((p1, p2) => {
-          return new Date(p2.createdAt) - new Date(p1.createdAt);
-        })
-      );
+      try {
+        const res = username
+          ? await axios.get("/posts/profile/" + username)
+          : await axios.get("posts/timeline/" + user._id);
+
+        if (!res.data || !Array.isArray(res.data)) {
+          console.error("Invalid response data:", res.data);
+          return;
+        }
+
+        setPosts(
+          res.data.sort((p1, p2) => {
+            return new Date(p2.createdAt) - new Date(p1.createdAt);
+          })
+        );
+      } catch (err) {
+        console.error("Error fetching posts:", err);
+      }
     };
     fetchPosts();
   }, [username, user._id]);
