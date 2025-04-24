@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "../../api/axios";
 import { useRef } from "react";
 import "./register.css";
 import { useNavigate } from "react-router";
@@ -10,7 +10,6 @@ export default function Register() {
   const password = useRef();
   const passwordAgain = useRef();
   const navigate = useNavigate();
-  const apiUrl = import.meta.env.VITE_APP_API_URL
 
   const handleClick = async (e) => {
     e.preventDefault();
@@ -25,7 +24,7 @@ export default function Register() {
         password: password.current.value,
       };
       try {
-        await axios.post(`${apiUrl}/users/register`, user);
+        await axiosInstance.post("/users/register", user);
         navigate("/login");
       } catch (err) {
         console.log(err);

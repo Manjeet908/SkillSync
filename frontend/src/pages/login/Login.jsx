@@ -2,14 +2,13 @@ import { useContext, useRef } from "react";
 import "./login.css";
 import { AuthContext } from "../../context/AuthContext";
 import { CircularProgress } from "@mui/material";
-import axios from "axios";
+import axiosInstance from "../../api/axios";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const email = useRef();
   const password = useRef();
   const { isFetching, dispatch } = useContext(AuthContext);
-  const apiUrl = import.meta.env.VITE_APP_API_URL
   const navigate = useNavigate();
   const handleClick = async(e) => {
     e.preventDefault();
@@ -18,8 +17,7 @@ export default function Login() {
       password: password.current.value,
     };
     try {
-      const res = await axios.post(`${apiUrl}/users/login`, user);
-      console.log(res);
+      const res = await axiosInstance.post("/users/login", user);
       
       dispatch({ type: "LOGIN_SUCCESS", payload: res.data });
 
