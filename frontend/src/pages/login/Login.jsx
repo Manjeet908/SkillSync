@@ -1,15 +1,16 @@
 import { useContext, useRef } from "react";
 import "./login.css";
-import { loginCall } from "../../apiCalls";
 import { AuthContext } from "../../context/AuthContext";
 import { CircularProgress } from "@mui/material";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const email = useRef();
   const password = useRef();
   const { isFetching, dispatch } = useContext(AuthContext);
   const apiUrl = import.meta.env.VITE_APP_API_URL
-
+  const navigate = useNavigate();
   const handleClick = async(e) => {
     e.preventDefault();
     const user = {
@@ -21,18 +22,20 @@ export default function Login() {
       console.log(res);
       
       dispatch({ type: "LOGIN_SUCCESS", payload: res.data });
+
     } catch (err) {
       dispatch({ type: "LOGIN_FAILURE", payload: err });
     }
   };
 
+
   return (
     <div className="login">
       <div className="loginWrapper">
         <div className="loginLeft">
-          <h3 className="loginLogo">Lamasocial</h3>
+          <h3 className="loginLogo">SKILL SYNC</h3>
           <span className="loginDesc">
-            Connect with friends and the world around you on Lamasocial.
+            Connect with friends and the world around you on SKILL SYNC.
           </span>
         </div>
         <div className="loginRight">
@@ -60,7 +63,11 @@ export default function Login() {
               )}
             </button>
             <span className="loginForgot">Forgot Password?</span>
-            <button className="loginRegisterButton">
+             <button 
+              className="loginRegisterButton" 
+              type="button" 
+              onClick={() => navigate("/register")}
+            >
               {isFetching ? (
                 <CircularProgress color="white" size="20px" />
               ) : (
