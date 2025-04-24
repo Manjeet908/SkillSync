@@ -1,9 +1,10 @@
 import axios from "axios";
 import { useRef } from "react";
 import "./register.css";
-import { useNavigate} from "react-router";
+import { useNavigate } from "react-router";
 
 export default function Register() {
+  const fullname = useRef();
   const username = useRef();
   const email = useRef();
   const password = useRef();
@@ -17,13 +18,14 @@ export default function Register() {
         return;
     }
     const user = {
+        fullname: fullname.current.value,
         username: username.current.value,
         email: email.current.value,
         password: password.current.value,
       };
       try {
         await axios.post("/auth/register", user);
-        navigate.push("/login");
+        navigate("/login");
       } catch (err) {
         console.log(err);
         alert("Failed to register. Try again.");
@@ -41,6 +43,12 @@ export default function Register() {
         </div>
         <div className="loginRight">
           <form className="loginBox" onSubmit={handleClick}>
+            <input 
+              placeholder="Full Name" 
+              required 
+              ref={fullname} 
+              className="loginInput" 
+            />
             <input
               placeholder="Username"
               required
