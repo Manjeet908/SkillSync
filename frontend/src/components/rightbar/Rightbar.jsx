@@ -51,29 +51,30 @@ export default function Rightbar({ user }) {
       <>
         {user.username !== currentUser.username && (
           <button className="rightbarFollowButton" onClick={handleClick}>
-            {followed ? "Unfollow" : "Follow"}
+            {followed ? "Disconnect" : "Connect"}
             {followed ? <Remove /> : <Add />}
           </button>
         )}
-        <h4 className="rightbarTitle">User information</h4>
         <div className="rightbarInfo">
           <div className="rightbarInfoItem">
-            <span className="rightbarInfoKey">City:</span>
-            <span className="rightbarInfoValue">{user.city}</span>
+            <span className="rightbarInfoKey">Club Member:</span>
+            <span className="rightbarInfoValue">{user.club}</span>
           </div>
           <div className="rightbarInfoItem">
-            <span className="rightbarInfoKey">From:</span>
-            <span className="rightbarInfoValue">{user.from}</span>
+            <span className="rightbarInfoKey">Coding Profile:</span>
+            <span className="rightbarInfoValue">{user.cfRating}</span>
           </div>
           <div className="rightbarInfoItem">
-            <span className="rightbarInfoKey">Relationship:</span>
-            <span className="rightbarInfoValue">
-              {user.relationship === 1
-                ? "Single"
-                : user.relationship === 1
-                ? "Married"
-                : "-"}
-            </span>
+            <span className="rightbarInfoKey">Hobbies:</span>
+            <span className="rightbarInfoValue">{user.hobbies}</span>
+          </div>
+          <div className="rightbarInfoItem">
+            <span className="rightbarInfoKey">Place of Birth:</span>
+            <span className="rightbarInfoValue">{user.birthPlace}</span>
+          </div>
+          <div className="rightbarInfoItem">
+            <span className="rightbarInfoKey">Schooling:</span>
+            <span className="rightbarInfoValue">{user.school}</span>
           </div>
         </div>
         <h4 className="rightbarTitle">User friends</h4>
