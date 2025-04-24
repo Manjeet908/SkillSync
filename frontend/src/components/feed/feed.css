@@ -1,3 +1,6 @@
+.feed {
+    flex: 6;
+}
 .sidebarFriend {
     display: flex;
     align-items: center;
