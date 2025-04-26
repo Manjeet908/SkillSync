@@ -1,11 +1,23 @@
 .profile {
     display: flex;
+    background-size: cover;
+    background-position: center;
 }
 
 .profileRight {
     flex: 9;
 }
+.profileRightTop {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: white;
+    padding: 20px 0;
+    /* Add background to prevent content showing through */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
+    /* Optional: adds subtle shadow */
+}
 .profileCover {
     height: 320px;
     position: relative;

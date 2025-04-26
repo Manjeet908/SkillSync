@@ -1,14 +1,14 @@
 /* register.css */
 
 body {
-    background-image:url("/assets/gift/image1.png");
-    background-size: cover;
     margin: 0;
     padding: 0;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .login {
+    background-image: url("/assets/gift/image1.png");
+    background-size: cover;
     width: 100vw;
     height: 100vh;
     background: url("/assets/netflix-bg.jpg") center center / cover no-repeat;

@@ -1,0 +1,21 @@
+.courses-page {
+    padding: 1.5rem;
+    /* p-6 */
+}
+
+.page-title {
+    font-size: 1.5rem;
+    /* text-2xl */
+    font-weight: 700;
+    /* font-bold */
+    margin-bottom: 1rem;
+    /* mb-4 */
+}
+
+.departments-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    /* grid-cols-2 */
+    gap: 1rem;
+    /* gap-4 */
+}

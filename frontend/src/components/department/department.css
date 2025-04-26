@@ -1,0 +1,25 @@
+.department-card {
+    cursor: pointer;
+    padding: 1rem;
+    /* p-4 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* shadow-lg */
+    border-radius: 0.5rem;
+    /* rounded-lg */
+    background-color: #bfdbfe;
+    /* bg-blue-100 */
+    transition: background-color 0.3s;
+    /* transition */
+}
+
+.department-card:hover {
+    background-color: #93c5fd;
+    /* hover:bg-blue-200 */
+}
+
+.department-title {
+    font-size: 1.25rem;
+    /* text-xl */
+    font-weight: 600;
+    /* font-semibold */
+}
