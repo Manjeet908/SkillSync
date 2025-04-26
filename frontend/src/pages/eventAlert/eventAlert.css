@@ -1,0 +1,96 @@
+/* Add these styles to your existing EventAlert.css */
+
+.eventAlertContainer {
+    padding: 20px;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.eventInputContainer {
+    margin-bottom: 20px;
+}
+
+.eventInput {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: vertical;
+    margin-bottom: 10px;
+    font-family: inherit;
+}
+
+.eventPostButton {
+    background-color: #4267B2;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.eventPostButton:hover {
+    background-color: #365899;
+}
+
+.eventList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.eventItem {
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.localEvent {
+    border-left: 4px solid #4267B2;
+}
+
+.apiEvent {
+    border-left: 4px solid #E94E77;
+    background-color: #fafafa;
+}
+
+.eventText {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.eventDate {
+    font-size: 12px;
+    color: #666;
+    display: flex;
+    justify-content: space-between;
+}
+
+.apiTag {
+    background-color: #E94E77;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 10px;
+}
+
+.loadingIndicator {
+    text-align: center;
+    padding: 10px;
+    font-style: italic;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.errorMessage {
+    color: #d9534f;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #d9534f;
+    border-radius: 5px;
+    background-color: #f9f2f2;
+}

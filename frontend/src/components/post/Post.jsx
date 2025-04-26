@@ -10,7 +10,7 @@ export default function Post({ post }) {
   const [like, setLike] = useState(post.likes.length);
   const [isLiked, setIsLiked] = useState(false);
   const [user, setUser] = useState({});
-  const PF = process.env.REACT_APP_PUBLIC_FOLDER;
+  const PF = import.meta.env.VITE_APP_PUBLIC_FOLDER;
   const { user: currentUser } = useContext(AuthContext);
 
   useEffect(() => {
@@ -41,9 +41,9 @@ export default function Post({ post }) {
               <img
                 className="postProfileImg"
                 src={
-                  user.profilePicture
+                    user.profilePicture
                     ? PF + user.profilePicture
-                    : PF + "person/noAvatar.png"
+                    : PF + "assets/person/1.jpg"
                 }
                 alt=""
               />

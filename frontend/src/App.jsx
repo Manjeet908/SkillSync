@@ -8,6 +8,7 @@ import Profile from "./pages/profile/Profile";
 import Register from "./pages/register/Register";
 import Courses from "./pages/courses/Courses";
 import DepartmentDetail from "./pages/departmentDetail/DepartmentDetail";
+import EventAlert from "./pages/eventAlert/EventAlert";
 
 function App() {
   const { user } = useContext(AuthContext);
@@ -21,6 +22,7 @@ function App() {
         <Route path="/profile/:username" element={<Profile />} />
         <Route path="/courses" element={user ? <Courses /> : <Navigate to="/register" />} />
         <Route path="/courses/:deptCode" element={user ? <DepartmentDetail /> : <Navigate to="/register" />} />
+        <Route path="/event-alert" element={user ? <EventAlert /> : <Navigate to="/register" />} />
       </Routes>
     </Router>
   );

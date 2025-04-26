@@ -13,8 +13,8 @@ import { useNavigate } from "react-router-dom";
 
 export default function Sidebar() {
   const navigate = useNavigate();
-  const handleClick = () => {
-    navigate("/courses");
+  const handleNavigate = (path) => {
+    navigate(path);
   };
   return (
     <div className="sidebar">
@@ -36,11 +36,11 @@ export default function Sidebar() {
             <Group className="sidebarIcon" />
             <span className="sidebarListItemText">Groups</span>
           </li>
-          <li className="sidebarListItem">
+          <li className="sidebarListItem" onClick={()=>handleNavigate("/event-alert")}>
             <Event className="sidebarIcon" />
-            <span className="sidebarListItemText">Events</span>
+            <span className="sidebarListItemText">Event Alert</span>
           </li>
-          <li className="sidebarListItem" onClick={handleClick}>
+          <li className="sidebarListItem" onClick={()=>handleNavigate("/Courses")}>
             <School className="sidebarIcon" />
             <span className="sidebarListItemText">Courses</span>
           </li>
