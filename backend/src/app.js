@@ -18,10 +18,13 @@ app.use(cookieParser())
 import userRouter from "./routes/user.routes.js"
 import followRouter from "./routes/follow.routes.js"
 import postRouter from "./routes/post.routes.js"
+import likeRouter from "./routes/like.routes.js"
+import commentRouter from "./routes/comment.routes.js"
 
 app.use("/api/v1/users", userRouter)
 app.use("/api/v1/follow", followRouter)
-app.use("/api/v1/posts", postRouter) // testing required
-
+app.use("/api/v1/posts", postRouter) 
+app.use("/api/v1/likes", likeRouter)
+app.use("/api/v1/comments", commentRouter)
 
 export default app
