@@ -18,11 +18,11 @@ export default function Profile() {
     const fetchUser = async () => {
       const res = await axiosInstance.get(`/users/get-user-profile/${username}`);
       setUser(res.data.data);
-      console.log("USER ", res.data.data);
     };
     fetchUser();
   }, [username]);
 
+  // console.log(user)
   return (
     <>
       <Topbar />
@@ -34,24 +34,19 @@ export default function Profile() {
             <img
               className="profileCoverImg"
               src={
-                user.coverPicture
-                  ? PF + user.coverPicture
-                  : PF + "assets/gift/background.jpg"
+                user.coverImage ? user.coverImage : PF + "assets/gift/background.jpg"
               }
               alt=""
-        
             />
               <img
                 className="profileUserImg"
                 src={
-                  user.profilePicture
-                    ? PF + user.profilePicture
-                    : PF + "assets/person/1.jpg"
+                  user.avatar ? user.avatar : PF + "assets/person/1.jpg"
                 }
                 alt=""
                 onClick={() => setIsModalOpen(true)}
               />
-              {isModalOpen && <ProfileModal onClose={() => setIsModalOpen(false)} />}
+              {isModalOpen && <ProfileModal onClose={() => setIsModalOpen(false)} user={user}/>}
             </div>
             <div className="profileInfo">
               <h4 className="profileInfoName">{user.username}</h4>
@@ -59,7 +54,8 @@ export default function Profile() {
             </div>
           </div>
           <div className="profileRightBottom">
-            <Feed username={username} />
+            {/* why feed? */}
+            <Feed username={username} /> 
             <Rightbar user={user} />
           </div>
         </div>
