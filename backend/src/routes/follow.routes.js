@@ -3,7 +3,8 @@ import {
     toggleFollow,
     toggleEmailNotify,
     getCreatorFollowers,
-    getUserFollowings
+    getUserFollowings,
+    checkIsFollowing
 } from "../controllers/follow.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -16,5 +17,6 @@ router.route("/get-user-followings/:username").get(getUserFollowings);
 // secure routes
 router.route("/toggle-follow/:username").post(verifyJWT, toggleFollow);
 router.route("/toggle-email-notify/:username").post(verifyJWT, toggleEmailNotify);
+router.route("/check-following/:username").get(verifyJWT, checkIsFollowing);
 
 export default router;

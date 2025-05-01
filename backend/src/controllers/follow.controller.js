@@ -149,9 +149,39 @@ const getUserFollowings = asyncHandler(async (req, res) => {
     
 })
 
+const checkIsFollowing = asyncHandler(async (req, res) => {
+    const { username } = req.params
+    const currentUser = req.user
+
+    if (!username?.trim()) {
+        throw new ApiError(400, "Username is required")
+    }
+
+    const userToCheck = await User.findOne({ username: username.toLowerCase() })
+    if (!userToCheck) {
+        throw new ApiError(404, "User not found")
+    }
+
+    const isFollowing = await Follow.findOne({
+        creator: userToCheck._id,
+        follower: currentUser._id
+    })
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                { isFollowing: isFollowing ? true : false },
+                "Following status checked successfully"
+            )
+        )
+})
+
 export {
     toggleFollow,
     toggleEmailNotify,
     getCreatorFollowers,
-    getUserFollowings
+    getUserFollowings,
+    checkIsFollowing
 }

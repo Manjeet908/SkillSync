@@ -1,55 +1,63 @@
 import "./rightbar.css";
 import Online from "../online/Online";
 import { useContext, useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "../../api/axios";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { Add, Remove } from "@mui/icons-material";
 
 export default function Rightbar({ user }) {
-  const apiUrl = import.meta.env.VITE_APP_API_URL
-  // const PF = import.meta.env.VITE_APP_PUBLIC_FOLDER;
-  const [friends, setFriends] = useState([]);
-  const { user: currentUser, dispatch } = useContext(AuthContext);
-  const [followed, setFollowed] = useState(
-    currentUser?.followings?.includes(user?.id)
-  );
+  const PF = import.meta.env.VITE_APP_PUBLIC_FOLDER;
+  const [followings, setFollowings] = useState([]);
+  const { user: res, dispatch } = useContext(AuthContext);
+  const currentUser = res?.data?.user;
+  const [followed, setFollowed] = useState(false);
+
 
   useEffect(() => {
-    const getFriends = async () => {
+    const getFollowings = async () => {
       try {
-        const friendList = await axios.get(`${apiUrl}/follow/get-user-followings${user._id}`);
-        setFriends(friendList.data);
+        const res = await axiosInstance.get(`/follow/get-user-followings/${user.username}`);
+        const followingsList = res.data.data;
+        setFollowings(followingsList);
       } catch (err) {
         console.log(err);
       }
     };
-    getFriends();
+
+    const checkFollowingStatus = async () => {
+      try {
+        const res = await axiosInstance.get(`/follow/check-following/${user.username}`);
+        setFollowed(res.data.data.isFollowing);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    if(user.username) {
+      getFollowings();
+      checkFollowingStatus();
+    }
   }, [user]);
 
   const handleClick = async () => {
     try {
-      if (followed) {
-        await axios.post(`${apiUrl}/follow/toggle-follow/{}`, {
-          userId: currentUser._id,
-        });
-        dispatch({ type: "UNFOLLOW", payload: user._id });
-      } else {
-        await axios.put(`/users/${user._id}/follow`, {
-          userId: currentUser._id,
-        });
-        dispatch({ type: "FOLLOW", payload: user._id });
-      }
+      await axiosInstance.post(`/follow/toggle-follow/${user.username}`);
+      // if (followed) {
+      //   dispatch({ type: "UNFOLLOW", payload: user._id });
+      // } else {
+      //   dispatch({ type: "FOLLOW", payload: user._id });
+      // }
       setFollowed(!followed);
     } catch (err) {
+      console.log(err);
     }
   };
-
 
   const ProfileRightbar = () => {
     return (
       <>
-        {user.username !== currentUser.username && (
+        {user._id !== currentUser?._id && (
           <button className="rightbarFollowButton" onClick={handleClick}>
             {followed ? "Disconnect" : "Connect"}
             {followed ? <Remove /> : <Add />}
@@ -77,36 +85,35 @@ export default function Rightbar({ user }) {
             <span className="rightbarInfoValue">{user.school}</span>
           </div>
         </div>
-        <h4 className="rightbarTitle">User friends</h4>
+        <h4 className="rightbarTitle">User Followings</h4>
         <div className="rightbarFollowings">
-          {friends && friends.length > 0 ? (
-            friends.map((friend) => (
+          {followings && followings.length > 0 ? (
+            followings.map((following) => (
               <Link
-                to={"/profile/" + friend?.username}
+                to={"/profile/" + following?.creator?.username}
                 style={{ textDecoration: "none" }}
-                key={friend?._id}
+                key={following?._id}
               >
                 <div className="rightbarFollowing">
                   <img
                     src={
-                      friend?.profilePicture
-                        ? PF + friend.profilePicture
-                        : PF + "person/noAvatar.png"
+                      following?.creator?.avatar ? following?.creator?.avatar : PF + "person/noAvatar.png"
                     }
                     alt=""
                     className="rightbarFollowingImg"
                   />
-                  <span className="rightbarFollowingName">{friend?.username}</span>
+                  <span className="rightbarFollowingName">{following?.creator?.username}</span>
                 </div>
               </Link>
             ))
           ) : (
-            <span>No friends to display</span> 
+            <span>No followings to display</span> 
           )}
         </div>
       </>
     );
   };
+
   return (
     <div className="rightbar">
       <div className="rightbarWrapper">
