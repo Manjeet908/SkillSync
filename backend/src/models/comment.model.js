@@ -23,7 +23,7 @@ const commentSchema = new Schema({
         ref: "Post",
         required: true      //remove if generic comment to be stored for various models
     },
-    commentBy: {
+    author: {
         type: Schema.Types.ObjectId,
         ref: "User"
     }
