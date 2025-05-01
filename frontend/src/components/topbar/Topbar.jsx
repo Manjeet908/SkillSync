@@ -26,7 +26,9 @@ export default function Topbar() {
       </div>
       <div className="topbarRight">
         <div className="topbarLinks">
+        <Link to="/"  style={{ textDecoration: "none" }}>
           <span className="topbarLink">Homepage</span>
+        </Link>
           <span className="topbarLink">Timeline</span>
         </div>
         <div className="topbarIcons">

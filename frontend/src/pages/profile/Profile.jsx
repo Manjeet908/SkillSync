@@ -22,7 +22,7 @@ export default function Profile() {
     fetchUser();
   }, [username]);
 
-  // console.log(user)
+  // console.log("hi", user)
   return (
     <>
       <Topbar />
