@@ -140,9 +140,26 @@ const getAllPosts = asyncHandler(async (req, res) => {
                 $unwind: "$creator"
             },
             {
+                $lookup: {
+                    from: "likes",
+                    localField: "_id",
+                    foreignField: "post",
+                    as: "likes"
+                }
+            },
+            {
+                $addFields: {
+                    likesCount: { $size: "$likes" },
+                    isLiked: {
+                        $in: [ req.user._id, "$likes.likedBy" ]
+                    }
+                }
+            },
+            {
                 $project: {
                     "creator.password": 0,
-                    "creator.email": 0
+                    "creator.email": 0,
+                    "likes": 0
                 }
             },
             {
@@ -185,9 +202,26 @@ const getUserPosts = asyncHandler(async (req, res) => {
                 $unwind: "$creator"
             },
             {
+                $lookup: {
+                    from: "likes",
+                    localField: "_id",
+                    foreignField: "post",
+                    as: "likes"
+                }
+            },
+            {
+                $addFields: {
+                    likesCount: { $size: "$likes" },
+                    isLiked: {
+                        $in: [ req.user._id, "$likes.likedBy" ]
+                    }
+                }
+            },
+            {
                 $project: {
                     "creator.password": 0,
-                    "creator.email": 0
+                    "creator.email": 0,
+                    "likes": 0
                 }
             },
             {
