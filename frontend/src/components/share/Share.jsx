@@ -8,7 +8,7 @@ import {
 } from "@mui/icons-material";
 import { useContext, useRef, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import axios from "axios";
+import axiosInstance from "../../api/axios";
 
 export default function Share() {
   const { user } = useContext(AuthContext);
@@ -18,25 +18,25 @@ export default function Share() {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    const newPost = {
-      userId: user._id,
-      desc: desc.current.value,
-    };
-    if (file) {
-      const data = new FormData();
-      const fileName = Date.now() + file.name;
-      data.append("name", fileName);
-      data.append("file", file);
-      newPost.img = fileName;
-      console.log(newPost);
-      try {
-        await axios.post("/upload", data);
-      } catch (err) {}
-    }
+    const newPost = new FormData();
+    newPost.append("title", desc.current.value);
+    newPost.append("description", desc.current.value); 
+    newPost.append("category", "other");
+
     try {
-      await axios.post("/posts", newPost);
+      if (file) {
+        newPost.append("media", file);
+      }
+      
+      await axiosInstance.post("/posts/create-post", newPost, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       window.location.reload();
-    } catch (err) {}
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -46,9 +46,7 @@ export default function Share() {
           <img
             className="shareProfileImg"
             src={
-              user.profilePicture
-                ? PF + user.profilePicture
-                : PF + "person/noAvatar.png"
+              user.avatar ? user.avatar : PF + "person/noAvatar.png"
             }
             alt=""
           />
@@ -74,7 +72,7 @@ export default function Share() {
                 style={{ display: "none" }}
                 type="file"
                 id="file"
-                accept=".png,.jpeg,.jpg"
+                accept=".png,.jpeg,.jpg,.mp4,.mov,.avi"
                 onChange={(e) => setFile(e.target.files[0])}
               />
             </label>

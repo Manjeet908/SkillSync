@@ -6,15 +6,32 @@ import {
   Group,
   Event,
   School,
+  LogoutOutlined,
 } from "@mui/icons-material";
 import { Users } from "../../dummyData";
 import CloseFriend from "../closeFriend/CloseFriend";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../api/axios";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function Sidebar() {
   const navigate = useNavigate();
+  const { dispatch } = useContext(AuthContext);
+  
   const handleNavigate = (path) => {
     navigate(path);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.post("/users/logout");
+      localStorage.removeItem("user");
+      dispatch({ type: "LOGOUT" });
+      navigate("/login");
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   };
   return (
     <div className="sidebar">
@@ -43,6 +60,10 @@ export default function Sidebar() {
           <li className="sidebarListItem" onClick={()=>handleNavigate("/Courses")}>
             <School className="sidebarIcon" />
             <span className="sidebarListItemText">Courses</span>
+          </li>
+          <li className="sidebarListItem" onClick={() => handleLogout()}>
+            <LogoutOutlined className="sidebarIcon" />
+            <span className="sidebarListItemText">Logout</span>
           </li>
         </ul>
         <hr className="sidebarHr" />

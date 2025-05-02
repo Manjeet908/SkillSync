@@ -18,8 +18,12 @@ export default function Login() {
     };
     try {
       const res = await axiosInstance.post("/users/login", user);
-      
-      dispatch({ type: "LOGIN_SUCCESS", payload: res.data });
+      const userDetails = {
+        ...res.data.data.user,
+        accessToken: res.data.data.accessToken,
+        refreshToken: res.data.data.refreshToken
+      };
+      dispatch({ type: "LOGIN_SUCCESS", payload: userDetails });
 
     } catch (err) {
       dispatch({ type: "LOGIN_FAILURE", payload: err });

@@ -5,8 +5,7 @@ import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 
 export default function Topbar() {
-  let { user } = useContext(AuthContext);
-  user = user.data.user;
+  const { user } = useContext(AuthContext);
   const PF = import.meta.env.VITE_APP_PUBLIC_FOLDER;
   return (
     <div className="topbarContainer">

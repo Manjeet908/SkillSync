@@ -9,8 +9,7 @@ import { Add, Remove } from "@mui/icons-material";
 export default function Rightbar({ user }) {
   const PF = import.meta.env.VITE_APP_PUBLIC_FOLDER;
   const [followings, setFollowings] = useState([]);
-  const { user: res, dispatch } = useContext(AuthContext);
-  const currentUser = res?.data?.user;
+  const { user: currentUser, dispatch } = useContext(AuthContext);
   const [followed, setFollowed] = useState(false);
 
 
@@ -65,24 +64,12 @@ export default function Rightbar({ user }) {
         )}
         <div className="rightbarInfo">
           <div className="rightbarInfoItem">
-            <span className="rightbarInfoKey">Club Member:</span>
-            <span className="rightbarInfoValue">{user.club}</span>
+            <span className="rightbarInfoKey">Skills:</span>
+            <span className="rightbarInfoValue">{user.skills}</span>
           </div>
           <div className="rightbarInfoItem">
-            <span className="rightbarInfoKey">Coding Profile:</span>
-            <span className="rightbarInfoValue">{user.cfRating}</span>
-          </div>
-          <div className="rightbarInfoItem">
-            <span className="rightbarInfoKey">Hobbies:</span>
-            <span className="rightbarInfoValue">{user.hobbies}</span>
-          </div>
-          <div className="rightbarInfoItem">
-            <span className="rightbarInfoKey">Place of Birth:</span>
+            <span className="rightbarInfoKey">Country of Origin:</span>
             <span className="rightbarInfoValue">{user.birthPlace}</span>
-          </div>
-          <div className="rightbarInfoItem">
-            <span className="rightbarInfoKey">Schooling:</span>
-            <span className="rightbarInfoValue">{user.school}</span>
           </div>
         </div>
         <h4 className="rightbarTitle">User Followings</h4>

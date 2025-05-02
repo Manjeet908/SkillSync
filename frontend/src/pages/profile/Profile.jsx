@@ -3,15 +3,17 @@ import Topbar from "../../components/topbar/Topbar";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Feed from "../../components/feed/Feed";
 import Rightbar from "../../components/rightbar/Rightbar";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import axiosInstance from "../../api/axios";
 import { useParams } from "react-router";
 import ProfileModal from "../profileModal/ProfileModal";
 import { Edit } from "@mui/icons-material";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function Profile() {
   const PF = import.meta.env.VITE_APP_PUBLIC_FOLDER;
   const [user, setUser] = useState({});
+  const { user: currentUser } = useContext(AuthContext);
   const username = useParams().username;
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [isCoverModalOpen, setIsCoverModalOpen] = useState(false);
@@ -24,7 +26,8 @@ export default function Profile() {
     fetchUser();
   }, [username]);
 
-  // console.log("hi", user)
+  // console.log("hi", currentUser)
+  // console.log("hi2", user)
   return (
     <>
       <Topbar />
@@ -40,20 +43,23 @@ export default function Profile() {
                 }
                 alt=""
               />
-              <button 
-                className="editCoverBtn"
-                onClick={() => setIsCoverModalOpen(true)}
-              >
-                <Edit className="editIcon" />
-                Edit Cover Photo
-              </button>
+              
+              {currentUser.username === username && (
+                <button 
+                  className="editCoverBtn"
+                  onClick={() => setIsCoverModalOpen(true)}
+                >
+                  <Edit className="editIcon" />
+                  Edit Cover Photo
+                </button>
+              )}
               <img
                 className="profileUserImg"
                 src={
                   user.avatar ? user.avatar : PF + "assets/person/1.jpg"
                 }
                 alt=""
-                onClick={() => setIsAvatarModalOpen(true)}
+                onClick={() => currentUser.username === username &&  setIsAvatarModalOpen(true)}
               />
             </div>
             <div className="profileInfo">
