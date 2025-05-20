@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
+import mongoose from 'mongoose';
 
 const createPost = asyncHandler(async (req, res) => {
     const { title, description, category } = req.body
@@ -177,7 +178,7 @@ const getAllPosts = asyncHandler(async (req, res) => {
 })
 
 // getUserPosts to get unpublished/published posts of the owner
-const getUserPosts = asyncHandler(async (req, res) => {
+const getCurrentUserPosts = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
 
     const options = {
@@ -238,11 +239,87 @@ const getUserPosts = asyncHandler(async (req, res) => {
     );
 })
 
+const getUserPosts = asyncHandler(async (req, res) => {
+
+    const { id: creatorUserId } = req.params
+    
+    if (!creatorUserId) {
+        throw new ApiError(400, "User ID is required")
+    }
+
+    let creatorId;
+    try {
+        creatorId = new mongoose.Types.ObjectId(creatorUserId)
+    } catch (error) {
+        throw new ApiError(400, "Invalid user ID format")
+    }
+    
+    const { page = 1, limit = 10 } = req.query;
+
+    const options = {
+        page: parseInt(page, 10) || 1,
+        limit: parseInt(limit, 10) || 10
+    };
+
+    const posts = await Post.aggregatePaginate(
+        Post.aggregate([ 
+            {
+                $match: { creator: creatorId }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "creator",
+                    foreignField: "_id",
+                    as: "creator"
+                }
+            },
+            {
+                $unwind: "$creator"
+            },
+            {
+                $lookup: {
+                    from: "likes",
+                    localField: "_id",
+                    foreignField: "post",
+                    as: "likes"
+                }
+            },
+            {
+                $addFields: {
+                    likesCount: { $size: "$likes" },
+                    isLiked: {
+                        $in: [ req.user._id, "$likes.likedBy" ]
+                    }
+                }
+            },
+            {
+                $project: {
+                    "creator.password": 0,
+                    "creator.email": 0,
+                    "likes": 0
+                }
+            },
+            {
+                $sort: { createdAt: -1 }
+            }
+        ]), 
+        options
+    );
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, posts, "Posts fetched")
+    );
+})
+
 export {
     createPost,
     togglePublish,
     deletePost,
     getPostById,
     getAllPosts,
+    getCurrentUserPosts,
     getUserPosts
 }

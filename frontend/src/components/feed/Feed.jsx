@@ -12,7 +12,10 @@ export default function Feed({ username }) {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = username ? await axiosInstance.get("/posts/profile/" + username) : await axiosInstance.get("posts/get-all-posts/");
+        
+        const creatorRes = username ? await axiosInstance.get("users/get-user-profile/" + username) : null
+        const creator = creatorRes?.data?.data
+        const res = username ? await axiosInstance.get("/posts/get-user-posts/" + creator?._id) : await axiosInstance.get("posts/get-all-posts/");
 
         if (!res.data || !Array.isArray(res.data.data.docs)) {
           console.error("Invalid response data:", res.data);
