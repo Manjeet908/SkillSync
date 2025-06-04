@@ -51,7 +51,7 @@ const toggleFollow = asyncHandler(async (req, res) => {
     
 })
 
-const toggleEmailNotify = asyncHandler(async (req, res) => {
+const toggleNotify = asyncHandler(async (req, res) => {
 
     const { username } = req.params
     const user = req.user
@@ -70,21 +70,21 @@ const toggleEmailNotify = asyncHandler(async (req, res) => {
             throw new ApiError(404, "You are not following this user")
         }
     
-        isFollowing.emailNotify = !isFollowing.emailNotify
+        isFollowing.Notify = !isFollowing.Notify
     
         const updatedFollow = await isFollowing.save()
     
         if(!updatedFollow){
-            throw new ApiError(500, "There was a problem while updating email notification")
+            throw new ApiError(500, "There was a problem while updating notification")
         }
     
         return res
         .status(200)
         .json(
-            new ApiResponse(200, updatedFollow, "Email notification updated successfully")
+            new ApiResponse(200, updatedFollow, "notification updated successfully")
         )
     } catch (error) {
-        throw new ApiError(500, error.message || "There was a problem while updating email notification")        
+        throw new ApiError(500, error.message || "There was a problem while updating notification")        
     }
 })
 
@@ -180,7 +180,7 @@ const checkIsFollowing = asyncHandler(async (req, res) => {
 
 export {
     toggleFollow,
-    toggleEmailNotify,
+    toggleNotify,
     getCreatorFollowers,
     getUserFollowings,
     checkIsFollowing

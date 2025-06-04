@@ -10,7 +10,7 @@ const followSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "User"
     },
-    emailNotify: {
+    Notify: {
         type: Boolean,
         default: false
     }

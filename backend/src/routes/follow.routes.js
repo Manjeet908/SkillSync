@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
     toggleFollow,
-    toggleEmailNotify,
+    toggleNotify,
     getCreatorFollowers,
     getUserFollowings,
     checkIsFollowing
@@ -16,7 +16,7 @@ router.route("/get-user-followings/:username").get(getUserFollowings);
 
 // secure routes
 router.route("/toggle-follow/:username").post(verifyJWT, toggleFollow);
-router.route("/toggle-email-notify/:username").post(verifyJWT, toggleEmailNotify);
+router.route("/toggle-notify/:username").post(verifyJWT, toggleNotify);
 router.route("/check-following/:username").get(verifyJWT, checkIsFollowing);
 
 export default router;

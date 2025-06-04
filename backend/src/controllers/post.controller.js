@@ -2,6 +2,7 @@ import { Post } from '../models/post.model.js'
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
+import { notifyOnNewPost } from './notification.controller.js';
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 import mongoose from 'mongoose';
 
@@ -32,6 +33,8 @@ const createPost = asyncHandler(async (req, res) => {
         media: fileUrls,
         creator: req.user._id
     })
+
+    notifyOnNewPost(newPost, req.user)
     
     return res
     .status(201)

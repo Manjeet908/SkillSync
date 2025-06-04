@@ -1,12 +1,29 @@
 import "./topbar.css";
+import { useEffect } from "react";
 import { Search, Person, Chat, Notifications } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import { useSocket } from '../../context/SocketContext';
 
 export default function Topbar() {
   const { user } = useContext(AuthContext);
   const PF = import.meta.env.VITE_APP_PUBLIC_FOLDER;
+
+  const socket = useSocket();
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on('new_notification', (data) => {
+      console.log('Notification:', data);
+    });
+
+    return () => {
+      socket.off('new_notification');
+    };
+  }, [socket]);
+
   return (
     <div className="topbarContainer">
       <div className="topbarLeft">
