@@ -3,6 +3,9 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { notifyOnNewPost } from './notification.controller.js';
+import { Notification } from '../models/notification.model.js';
+import { Like } from '../models/like.model.js';
+import { Comment } from '../models/comment.model.js';
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 import mongoose from 'mongoose';
 
@@ -89,6 +92,9 @@ const deletePost = asyncHandler(async (req, res) => {
     }
 
     const deletedPost = await Post.findByIdAndDelete(id)
+    await Notification.deleteMany({contentId: post._id});
+    await Like.deleteMany({post: post._id});
+    await Comment.deleteMany({post: post._id});
 
     return res
     .status(200)

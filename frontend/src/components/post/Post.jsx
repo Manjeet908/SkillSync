@@ -1,9 +1,9 @@
 import "./post.css";
-import { MoreVert, Favorite, FavoriteBorder } from "@mui/icons-material";
+import { MoreVert, Favorite, FavoriteBorder, Delete } from "@mui/icons-material";
 import { useContext, useEffect, useState } from "react";
 import axiosInstance from "../../api/axios";
 import * as timeago from "timeago.js";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
 export default function Post({ post }) {
@@ -12,6 +12,9 @@ export default function Post({ post }) {
   const [creator, setCreator] = useState(post.creator);
   const PF = import.meta.env.VITE_APP_PUBLIC_FOLDER;
   const { user: currentUser } = useContext(AuthContext);
+  const location = useLocation();
+  const isProfilePage = location.pathname.includes('/profile/');
+  const isOwnProfile = isProfilePage && location.pathname.includes(`/profile/${currentUser.username}`);
 
   useEffect(() => {
     setIsLiked(post.isLiked || false);
@@ -29,6 +32,15 @@ export default function Post({ post }) {
     }
     setLike(isLiked ? like - 1 : like + 1);
     setIsLiked(!isLiked);
+  };
+
+  const deleteHandler = async () => {
+    try {
+      await axiosInstance.delete("/posts/delete-post/" + post._id);
+      window.location.reload();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const isVideo = (url) => {
@@ -53,6 +65,9 @@ export default function Post({ post }) {
             <span className="postDate">{timeago.format(post.createdAt)}</span>
           </div>
           <div className="postTopRight">
+            {isOwnProfile && (
+              <Delete className="deleteIcon" onClick={deleteHandler} />
+            )}
             <MoreVert />
           </div>
         </div>

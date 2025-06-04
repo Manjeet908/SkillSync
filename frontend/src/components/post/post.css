@@ -103,3 +103,19 @@
     height: 100%;
     object-fit: cover;
 }
+
+.postTopRight {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.deleteIcon {
+    cursor: pointer;
+    color: #ff4444;
+    transition: color 0.2s ease;
+}
+
+.deleteIcon:hover {
+    color: #cc0000;
+}
