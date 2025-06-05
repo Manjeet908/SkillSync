@@ -17,7 +17,7 @@ import {
     forgotPassword,
     resetPassword,
     getUserProfile
- } from '../controllers/user.controller.js'
+} from '../controllers/user.controller.js'
 
 const router = Router()
 
@@ -38,8 +38,8 @@ router.route("/register").post(
 
 router.route("/login").post(loginUser)
 router.route("/refresh-token").post(refreshAccessToken)
-router.post("/forgot-password", forgotPassword)
-router.patch("/reset-password/:token", resetPassword)
+router.route("/forgot-password").post(forgotPassword)
+router.route("/reset-password/:token").patch(resetPassword)
 
 
 //secure routes
@@ -47,11 +47,11 @@ router.patch("/reset-password/:token", resetPassword)
 router.route("/logout").post(verifyJWT, logoutUser)
 router.route("/change-password").post(verifyJWT, changePassword)
 router.route("/get-current-user").get(verifyJWT, getCurrentUser)
-router.route("/update-account-details").put(verifyJWT, updateAccountDetails)
+router.route("/update-account-details").patch(verifyJWT, updateAccountDetails)
 router.route("/update-avatar").put(verifyJWT, upload.single("avatar"), updateAvatar)
 router.route("/update-cover-image").put(verifyJWT, upload.single("coverImage"), updateCoverImage)
 router.route("/update-want-to-be-hired").put(verifyJWT, updateWantToBeHired)
-router.route("/update-skills").put(verifyJWT, updateSkills)
+router.route("/update-skills").patch(verifyJWT, updateSkills)
 router.route("/update-location").put(verifyJWT, updateLocation)
 router.route("/get-user-profile/:username").get(verifyJWT, getUserProfile)
 

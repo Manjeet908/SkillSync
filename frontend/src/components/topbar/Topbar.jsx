@@ -1,28 +1,60 @@
 import "./topbar.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Search, Person, Chat, Notifications } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useSocket } from '../../context/SocketContext';
+import NotificationPanel from "../notification/NotificationPanel";
+import axiosInstance from "../../api/axios";
 
 export default function Topbar() {
   const { user } = useContext(AuthContext);
   const PF = import.meta.env.VITE_APP_PUBLIC_FOLDER;
-
   const socket = useSocket();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    if (!socket) return;
-
-    socket.on('new_notification', (data) => {
-      console.log('Notification:', data);
-    });
-
-    return () => {
-      socket.off('new_notification');
+    
+    const fetchNotifications = async () => {
+      try {
+        const response = await axiosInstance.get("/notify/user-notifications");
+        setNotifications(response.data.data);
+        setNotificationCount(response.data.data.length);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
     };
+
+    fetchNotifications();
+
+    if (socket) {
+      socket.on('new_notification', (data) => {
+        console.log(data)
+        setNotifications(prev => [data, ...prev]);
+        setNotificationCount(prev => prev + 1);
+      });
+
+      return () => {
+        socket.off('new_notification');
+      };
+    }
   }, [socket]);
+
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
+    if (!showNotifications) {
+      axiosInstance.patch("/notify/mark-read-all") // mark all as read in background
+      setNotificationCount(0);
+    }
+  };
+
+  const clearNotifications = () => {
+    axiosInstance.delete("/notify/delete-read") // delete all read notifications in background
+    setNotifications([]);
+  };
 
   return (
     <div className="topbarContainer">
@@ -42,9 +74,9 @@ export default function Topbar() {
       </div>
       <div className="topbarRight">
         <div className="topbarLinks">
-        <Link to="/"  style={{ textDecoration: "none" }}>
-          <span className="topbarLink">Homepage</span>
-        </Link>
+          <Link to="/" style={{ textDecoration: "none" }}>
+            <span className="topbarLink">Homepage</span>
+          </Link>
           <span className="topbarLink">Timeline</span>
         </div>
         <div className="topbarIcons">
@@ -56,17 +88,22 @@ export default function Topbar() {
             <Chat />
             <span className="topbarIconBadge">2</span>
           </div>
-          <div className="topbarIconItem">
+          <div className="topbarIconItem" onClick={toggleNotifications}>
             <Notifications />
-            <span className="topbarIconBadge">1</span>
+            {notificationCount > 0 && (
+              <span className="topbarIconBadge">{notificationCount}</span>
+            )}
+            {showNotifications && (
+              <NotificationPanel 
+                notifications={notifications} 
+                onClear={clearNotifications}
+              />
+            )}
           </div>
         </div>
-        {/* testing required */}
         <Link to={`/profile/${user.username}`}>
           <img
-            src={
-                    user.avatar ? user.avatar : PF + "assets/person/1.jpg"
-            }
+            src={user.avatar ? user.avatar : PF + "assets/person/1.jpg"}
             alt=""
             className="topbarImg"
           />

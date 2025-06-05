@@ -26,5 +26,6 @@ const notificationSchema = new Schema({
     },
 }, {timestamps: true})
 
+notificationSchema.index({ createdAt: 1 }, { expires: '1d' }); // change it later to 7d or 15d
 
 export const Notification = mongoose.model("Notification", notificationSchema)
