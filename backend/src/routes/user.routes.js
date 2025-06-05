@@ -37,7 +37,7 @@ router.route("/register").post(
 )
 
 router.route("/login").post(loginUser)
-router.route("/refresh-token").post(refreshAccessToken)
+router.route("/auth/refresh-token").post(refreshAccessToken)
 router.route("/forgot-password").post(forgotPassword)
 router.route("/reset-password/:token").patch(resetPassword)
 

@@ -107,7 +107,9 @@ const generateAccessAndRefreshToken = async(userId) => {
 
 const secureCookie = {
     httpOnly: true,
-    secure: true
+    secure: true,
+    sameSite: 'strict',
+    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30) // 30 days
 }
 
 const loginUser = asyncHandler(async(req, res) => {
@@ -138,7 +140,7 @@ const loginUser = asyncHandler(async(req, res) => {
 
     const isValidPassword = await user.isPasswordCorrect(password)
     if(!isValidPassword) {
-        throw new ApiError(401, "Incorrect Password")
+        throw new ApiError(400, "Incorrect Password")
     }
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id)
@@ -188,18 +190,18 @@ const logoutUser = asyncHandler(async(req, res) => {
 const refreshAccessToken = asyncHandler(async(req, res) => {
 
     try {
-        const incomingRefreshToken = req.cookies?.refreshToken
+        const incomingRefreshToken = req.cookies?.refreshToken || req.headers["x-refresh-token"]
         if(!incomingRefreshToken)
-            throw new ApiError(401, "Unauthrised access")
+            throw new ApiError(400, "Refresh Token Not Found")
     
         const decodedRefreshToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET)
     
         const user = await User.findById(decodedRefreshToken._id)
         if(!user)
-            throw new ApiError(401, "Invalid refresh token")
+            throw new ApiError(400, "Invalid refresh token")
     
         if(user?.refreshToken !== incomingRefreshToken)
-            throw new ApiError(401, "Refresh token expired")
+            throw new ApiError(400, "Refresh token expired")
     
         const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id)
 
@@ -219,7 +221,7 @@ const refreshAccessToken = asyncHandler(async(req, res) => {
         )
 
     } catch (error) {
-        throw new ApiError(401, error?.message || "Invalid refresh Token")
+        throw new ApiError(400, error?.message || "Invalid refresh Token")
     }
 
 })
