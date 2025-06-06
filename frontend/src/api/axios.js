@@ -14,15 +14,15 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    console.log("1 Inside Axios response")
     const originalRequest = error.config;
 
+    const errorMessage = error.response?.data;
     if (
       error.response?.status === 401 && 
+      typeof errorMessage === 'string' && errorMessage.includes('jwt expired') &&
       !originalRequest._retry && 
       originalRequest.url !== '/users/auth/refresh-token'
     ) {
-      console.log("2 Inside Axios req Unauthorized thrown")
       originalRequest._retry = true;
 
       try {
@@ -32,10 +32,8 @@ axiosInstance.interceptors.response.use(
             withCredentials: true,
           }
         );
-
         return axiosInstance(originalRequest);
       } catch (refreshError) {
-        console.log("3 Inside Axios req")
         localStorage.removeItem('user');
         sessionStorage.clear();
         document.cookie.split(";").forEach(cookie => {

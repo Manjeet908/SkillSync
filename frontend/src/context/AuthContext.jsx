@@ -14,7 +14,6 @@ export const AuthContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE);
   
   const checkAndRefreshToken = async () => {
-    console.log("Inside Auth Context")
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user) return;
 
@@ -24,11 +23,10 @@ export const AuthContextProvider = ({ children }) => {
       });
 
       if(response.status === 200) {
-        const { accessToken, refreshToken } = response.data.data;
+        const { accessToken } = response.data.data;
         const fullUser = {
           ...user,
-          accessToken,
-          refreshToken
+          accessToken
         };
         dispatch({ type: "LOGIN_SUCCESS", payload: fullUser });
       }
@@ -37,7 +35,6 @@ export const AuthContextProvider = ({ children }) => {
       }
 
     } catch (error) {
-      console.log("Inside Auth Context refresh failed")
       localStorage.removeItem("user");
       dispatch({ type: "LOGOUT" });
     }
@@ -49,7 +46,7 @@ export const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (state.user) {
-      const { accessToken, refreshToken, ...userDataWithoutTokens } = state.user;
+      const { accessToken, ...userDataWithoutTokens } = state.user;
       localStorage.setItem("user", JSON.stringify(userDataWithoutTokens));
     }
   }, [state.user]);
