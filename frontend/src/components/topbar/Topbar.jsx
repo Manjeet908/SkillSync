@@ -1,6 +1,6 @@
 import "./topbar.css";
 import { useEffect, useState } from "react";
-import { Search, Person, Chat, Notifications } from "@mui/icons-material";
+import { Search, Notifications } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
@@ -17,7 +17,6 @@ export default function Topbar() {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    
     const fetchNotifications = async () => {
       try {
         const response = await axiosInstance.get("/notify/user-notifications");
@@ -46,13 +45,13 @@ export default function Topbar() {
   const toggleNotifications = () => {
     setShowNotifications(!showNotifications);
     if (!showNotifications) {
-      axiosInstance.patch("/notify/mark-read-all") // mark all as read in background
+      axiosInstance.patch("/notify/mark-read-all")
       setNotificationCount(0);
     }
   };
 
   const clearNotifications = () => {
-    axiosInstance.delete("/notify/delete-read") // delete all read notifications in background
+    axiosInstance.delete("/notify/delete-read")
     setNotifications([]);
   };
 
@@ -73,21 +72,7 @@ export default function Topbar() {
         </div>
       </div>
       <div className="topbarRight">
-        <div className="topbarLinks">
-          <Link to="/" style={{ textDecoration: "none" }}>
-            <span className="topbarLink">Homepage</span>
-          </Link>
-          <span className="topbarLink">Timeline</span>
-        </div>
         <div className="topbarIcons">
-          <div className="topbarIconItem">
-            <Person />
-            <span className="topbarIconBadge">1</span>
-          </div>
-          <div className="topbarIconItem">
-            <Chat />
-            <span className="topbarIconBadge">2</span>
-          </div>
           <div className="topbarIconItem" onClick={toggleNotifications}>
             <Notifications />
             {notificationCount > 0 && (

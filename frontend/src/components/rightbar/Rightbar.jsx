@@ -6,42 +6,42 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { Add, Remove } from "@mui/icons-material";
 
-export default function Rightbar({ user }) {
+export default function Rightbar() {
   const PF = import.meta.env.VITE_APP_PUBLIC_FOLDER;
   const [followings, setFollowings] = useState([]);
   const { user: currentUser, dispatch } = useContext(AuthContext);
   const [followed, setFollowed] = useState(false);
 
 
-  useEffect(() => {
-    const getFollowings = async () => {
-      try {
-        const res = await axiosInstance.get(`/follow/get-user-followings/${user.username}`);
-        const followingsList = res.data.data;
-        setFollowings(followingsList);
-      } catch (err) {
-        console.log(err);
-      }
-    };
+  // useEffect(() => {
+  //   const getFollowings = async () => {
+  //     try {
+  //       const res = await axiosInstance.get(`/follow/get-user-followings/${user.username}`);
+  //       const followingsList = res.data.data;
+  //       setFollowings(followingsList);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
 
-    const checkFollowingStatus = async () => {
-      try {
-        const res = await axiosInstance.get(`/follow/check-following/${user.username}`);
-        setFollowed(res.data.data.isFollowing);
-      } catch (err) {
-        console.log(err);
-      }
-    };
+  //   const checkFollowingStatus = async () => {
+  //     try {
+  //       const res = await axiosInstance.get(`/follow/check-following/${user.username}`);
+  //       setFollowed(res.data.data.isFollowing);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
 
-    if(user.username) {
-      getFollowings();
-      checkFollowingStatus();
-    }
-  }, [user]);
+  //   if(user.username) {
+  //     getFollowings();
+  //     checkFollowingStatus();
+  //   }
+  // }, [user]);
 
   const handleClick = async () => {
     try {
-      await axiosInstance.post(`/follow/toggle-follow/${user.username}`);
+      await axiosInstance.post(`/follow/toggle-follow/${user?.username}`);
       // if (followed) {
       //   dispatch({ type: "UNFOLLOW", payload: user._id });
       // } else {
@@ -56,7 +56,7 @@ export default function Rightbar({ user }) {
   const ProfileRightbar = () => {
     return (
       <>
-        {user._id !== currentUser?._id && (
+        {user?._id !== currentUser?._id && (
           <button className="rightbarFollowButton" onClick={handleClick}>
             {followed ? "Disconnect" : "Connect"}
             {followed ? <Remove /> : <Add />}
@@ -104,7 +104,7 @@ export default function Rightbar({ user }) {
   return (
     <div className="rightbar">
       <div className="rightbarWrapper">
-        {user ? <ProfileRightbar /> : null}
+        {/* {user ? <ProfileRightbar /> : null} */}
       </div>
     </div>
   );

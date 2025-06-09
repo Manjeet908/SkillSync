@@ -52,8 +52,10 @@
     flex: 4;
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: flex-end;
     color: white;
+    gap: 25px;
+    padding-right: 25px;
 }
 
 .topbarLink {
@@ -64,10 +66,10 @@
 
 .topbarIcons {
     display: flex;
+    align-items: center;
 }
 
 .topbarIconItem {
-    margin-right: 15px;
     cursor: pointer;
     position: relative;
 }

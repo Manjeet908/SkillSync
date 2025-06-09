@@ -39,6 +39,13 @@
     align-items: center;
     margin-bottom: 20px;
     cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.sidebarListItem:hover {
+    background-color: #f0f2f5;
 }
 
 .sidebarIcon {
@@ -61,4 +68,29 @@
     padding: 0;
     margin: 0;
     list-style: none;
+}
+
+.profile-dropdown {
+    position: relative;
+}
+
+.dropdown-arrow {
+    margin-left: auto;
+    transition: transform 0.2s;
+}
+
+.profile-dropdown.active .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.profile-dropdown-content {
+    margin-left: 20px;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    border-left: 2px solid #e4e6eb;
+    padding-left: 10px;
+}
+
+.profile-dropdown-content .sidebarListItem {
+    margin-bottom: 12px;
 }
