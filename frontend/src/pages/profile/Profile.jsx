@@ -2,7 +2,7 @@ import "./profile.css";
 import Topbar from "../../components/topbar/Topbar";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Feed from "../../components/feed/Feed";
-import Rightbar from "../../components/rightbar/Rightbar";
+import Rightbar from "../../components/FollowRequests/FollowRequests";
 import { useEffect, useState, useContext } from "react";
 import axiosInstance from "../../api/axios";
 import { useParams } from "react-router";
@@ -20,7 +20,9 @@ export default function Profile() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const res = await axiosInstance.get(`/users/get-user-profile/${username}`);
+      const res = await axiosInstance.get(
+        `/users/get-user-profile/${username}`
+      );
       setUser(res.data.data);
     };
     fetchUser();
@@ -39,13 +41,15 @@ export default function Profile() {
               <img
                 className="profileCoverImg"
                 src={
-                  user.coverImage ? user.coverImage : PF + "assets/gift/background.jpg"
+                  user.coverImage
+                    ? user.coverImage
+                    : PF + "assets/gift/background.jpg"
                 }
                 alt=""
               />
-              
+
               {currentUser.username === username && (
-                <button 
+                <button
                   className="editCoverBtn"
                   onClick={() => setIsCoverModalOpen(true)}
                 >
@@ -55,11 +59,12 @@ export default function Profile() {
               )}
               <img
                 className="profileUserImg"
-                src={
-                  user.avatar ? user.avatar : PF + "assets/person/1.jpg"
-                }
+                src={user.avatar ? user.avatar : PF + "assets/person/1.jpg"}
                 alt=""
-                onClick={() => currentUser.username === username &&  setIsAvatarModalOpen(true)}
+                onClick={() =>
+                  currentUser.username === username &&
+                  setIsAvatarModalOpen(true)
+                }
               />
             </div>
             <div className="profileInfo">
@@ -69,13 +74,17 @@ export default function Profile() {
           </div>
           <div className="profileRightBottom">
             {/* why feed? */}
-            <Feed username={username} /> 
+            <Feed username={username} />
             <Rightbar user={user} />
           </div>
         </div>
       </div>
-      {isAvatarModalOpen && <ProfileModal onClose={() => setIsAvatarModalOpen(false)} user={user}/>}
-      {isCoverModalOpen && <ProfileModal onClose={() => setIsCoverModalOpen(false)} user={user}/>}
+      {isAvatarModalOpen && (
+        <ProfileModal onClose={() => setIsAvatarModalOpen(false)} user={user} />
+      )}
+      {isCoverModalOpen && (
+        <ProfileModal onClose={() => setIsCoverModalOpen(false)} user={user} />
+      )}
     </>
   );
 }
