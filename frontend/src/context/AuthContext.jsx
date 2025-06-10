@@ -3,7 +3,7 @@ import AuthReducer from "./AuthReducer";
 import axiosInstance from "../api/axios";
 
 const INITIAL_STATE = {
-  user: null,
+  user: JSON.parse(localStorage.getItem("user")),
   isFetching: false,
   error: false,
 };
