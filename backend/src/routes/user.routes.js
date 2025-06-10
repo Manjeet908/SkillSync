@@ -12,7 +12,8 @@ import {
     updateAvatar,
     updateCoverImage,
     updateWantToBeHired,
-    updateSkills,
+    addToInterestedSkills,
+    removeFromInterestedSkills,
     updateLocation,
     forgotPassword,
     resetPassword,
@@ -51,7 +52,8 @@ router.route("/update-account-details").patch(verifyJWT, updateAccountDetails)
 router.route("/update-avatar").put(verifyJWT, upload.single("avatar"), updateAvatar)
 router.route("/update-cover-image").put(verifyJWT, upload.single("coverImage"), updateCoverImage)
 router.route("/update-want-to-be-hired").put(verifyJWT, updateWantToBeHired)
-router.route("/update-skills").patch(verifyJWT, updateSkills)
+router.route("/add-interested-skills").patch(verifyJWT, addToInterestedSkills)
+router.route("/remove-interested-skills").patch(verifyJWT, removeFromInterestedSkills)
 router.route("/update-location").put(verifyJWT, updateLocation)
 router.route("/get-user-profile/:username").get(verifyJWT, getUserProfile)
 

@@ -10,7 +10,7 @@ import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js
 import mongoose from 'mongoose';
 
 const createPost = asyncHandler(async (req, res) => {
-    const { title, description, category } = req.body
+    const { title, description, skillShowcasing } = req.body
 
     if(!title)
         throw new ApiError(400, 'Title is required')
@@ -32,7 +32,7 @@ const createPost = asyncHandler(async (req, res) => {
     const newPost = await Post.create({
         title,
         description,
-        category,
+        skillShowcasing,
         media: fileUrls,
         creator: req.user._id
     })

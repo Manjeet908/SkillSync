@@ -51,7 +51,13 @@ const userSchema = new Schema(
                 default: [0, 0]
             }
         },
-        skills: [
+        knownSkills: [
+            {
+                type: String,
+                trim: true
+            }
+        ],
+        interestedSkills: [
             {
                 type: String,
                 trim: true

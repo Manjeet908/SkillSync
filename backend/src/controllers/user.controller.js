@@ -18,7 +18,7 @@ const registerUser = asyncHandler(async(req, res) => {
     // check for user creation
     // return res
 
-    const { username, email, fullName, password, bio, location, skills, wantToBeHired } = req.body
+    const { username, email, fullName, password, bio, location, knownSkills, interestedSkills, wantToBeHired } = req.body
 
 
     let avatarLocalPath;
@@ -66,7 +66,8 @@ const registerUser = asyncHandler(async(req, res) => {
         coverImage: coverImage?.url || "",
         bio: bio || "",
         location: userLocation,
-        skills: skills || [],
+        knownSkills: knownSkills || [],
+        interestedSkills: interestedSkills || [],
         wantToBeHired: wantToBeHired || false,
         password        
     })
@@ -105,7 +106,7 @@ const generateAccessAndRefreshToken = async(userId) => {
     
 }
 
-const secureCookie = {
+const secureCookieWithExpiry = {
     httpOnly: true,
     secure: true,
     sameSite: 'strict',
@@ -149,8 +150,8 @@ const loginUser = asyncHandler(async(req, res) => {
 
     return res
     .status(200)
-    .cookie("accessToken", accessToken, secureCookie)
-    .cookie("refreshToken", refreshToken, secureCookie)
+    .cookie("accessToken", accessToken, secureCookieWithExpiry)
+    .cookie("refreshToken", refreshToken, secureCookieWithExpiry)
     .json(
         new ApiResponse(
             200,
@@ -178,6 +179,12 @@ const logoutUser = asyncHandler(async(req, res) => {
             new: true
         }
     )
+
+    const secureCookie = {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+    }
 
     return res
     .status(200)
@@ -207,8 +214,8 @@ const refreshAccessToken = asyncHandler(async(req, res) => {
 
         return res
         .status(200)
-        .cookie("accessToken", accessToken, secureCookie)
-        .cookie("refreshToken", refreshToken, secureCookie)
+        .cookie("accessToken", accessToken, secureCookieWithExpiry)
+        .cookie("refreshToken", refreshToken, secureCookieWithExpiry)
         .json(
             new ApiResponse(
                 200, 
@@ -266,11 +273,8 @@ const getCurrentUser = asyncHandler(async(req, res) => {
 })
 
 const updateAccountDetails = asyncHandler(async(req, res) => {
-    const { fullName, email, bio } = req.body
-
-    if (!fullName && !email && !bio) {
-        throw new ApiError(400, "No fields provided to update")
-    }
+    // add more things to update later
+    const { fullName, email, bio, knownSkills, wantToBeHired } = req.body
 
     const user = await User.findById(req.user?._id).select("-password")
 
@@ -286,6 +290,12 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
     }
     if(bio) {
         user.bio = bio
+    }
+    if(knownSkills !== undefined && Array.isArray(knownSkills)) {
+        user.knownSkills = knownSkills
+    }
+    if(wantToBeHired !== undefined) {
+        user.wantToBeHired = wantToBeHired
     }
 
     await user.save({validateBeforeSave: false})
@@ -391,20 +401,45 @@ const updateWantToBeHired = asyncHandler(async(req, res) => {
     )
 })
 
-const updateSkills = asyncHandler(async(req, res) => {
-    const { skills } = req.body
+const addToInterestedSkills = asyncHandler(async(req, res) => {
+    const { skill } = req.body
 
-    if(!skills || !Array.isArray(skills) || skills.length === 0)
+    if(!skill)
         throw new ApiError(400, "skills field is required")
 
     const user = await User.findById(req.user._id).select("-password")
     if(!user)
         throw new ApiError(500, "Unable to fetch User Id")
 
-    // provide valid skills array, don't provide only newly added skills, provide all skills 
-    user.skills = skills
-    await user.save({validateBeforeSave: false})
+    if(!user.interestedSkills.includes(skill)) {
+        user.interestedSkills.push(skill)
+        await user.save({validateBeforeSave: false})
+    }
 
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            user,
+            "Skills updated successfully"
+        )
+    )
+})
+
+const removeFromInterestedSkills = asyncHandler(async(req, res) => {
+    const { skill } = req.body
+    if(!skill)
+        throw new ApiError(400, "skills field is required")
+    
+    const user = await User.findById(req.user._id).select("-password")
+    if(!user)
+        throw new ApiError(500, "Unable to fetch User Id")
+    
+    if(user.interestedSkills.includes(skill)) {
+        user.interestedSkills = user.interestedSkills.filter(s => s !== skill)
+        await user.save({validateBeforeSave: false})
+    }
     return res
     .status(200)
     .json(
@@ -596,10 +631,18 @@ const getUserProfile = asyncHandler(async(req, res) => {
                 isFollowed: 1,
                 avatar: 1,
                 coverImage: 1,
-                email: 1,
+                // Only project email if the requesting user is viewing their own profile
+                email: {
+                    $cond: [
+                        { $eq: [ "$username", req.user?.username ] },
+                        "$email",
+                        "$$REMOVE"
+                    ]
+                },
                 bio: 1,
                 location: 1,
-                skills: 1,
+                knownSkills: 1,
+                interestedSkills: 1,
                 wantToBeHired: 1,
                 canEmailNotify: 1
             }
@@ -629,7 +672,8 @@ export {
     updateAvatar,
     updateCoverImage,
     updateWantToBeHired,
-    updateSkills,
+    addToInterestedSkills,
+    removeFromInterestedSkills, 
     updateLocation,
     forgotPassword,
     resetPassword,
