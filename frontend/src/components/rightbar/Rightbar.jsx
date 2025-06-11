@@ -3,7 +3,7 @@ import "./rightbar.css";
 import FriendSuggestions from '../FriendSuggestions/FriendSuggestions';
 function Rightbar() {
   return (
-    <div>
+    <div className='rightbar'>
         <FriendSuggestions/>
     </div>
   )
