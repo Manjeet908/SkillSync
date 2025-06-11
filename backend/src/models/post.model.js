@@ -19,7 +19,7 @@ const postSchema = new Schema({
     ],
     skillShowcasing: {
         type: String,
-        enum: ["web development", "mobile development", "graphic design", "music", "dance", "photography", "art", "writing", "content creation", "other"],
+        // enum: ["web development", "mobile development", "graphic design", "music", "dance", "photography", "art", "writing", "content creation", "other"],
         default: "other"
     },
     creator: {

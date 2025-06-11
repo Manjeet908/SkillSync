@@ -661,6 +661,112 @@ const getUserProfile = asyncHandler(async(req, res) => {
     )
 })
 
+const suggestUsers = asyncHandler(async (req, res) => {
+    
+    const currentUser = req.user;
+    if(!currentUser)
+        throw new ApiError(500, "Unable to fetch current user in suggestUser");
+
+    const knownSkills = currentUser.knownSkills || [];
+    const interestedSkills = currentUser.interestedSkills || [];
+
+    const suggestedUsers = await User.aggregate([
+        {
+            $search: {
+                compound: {
+                    should: [
+                        {
+                            text: {
+                                query: knownSkills,
+                                path: "knownSkills",
+                                score: { boost: { value: 2 } }
+                            }
+                        },
+                        {
+                            text: {
+                                query: interestedSkills,
+                                path: "interestedSkills",
+                                score: { boost: { value: 1 } }
+                            }
+                        }
+                    ],
+                    minimumShouldMatch: 1
+                }
+            }
+        },
+        {
+            $match: {
+                _id: { $ne: req.user?._id } // Exclude current user
+            }
+        },
+        {
+            $lookup: {
+                from: "follows",
+                localField: "_id",
+                foreignField: "creator",
+                as: "followers"
+            }
+        },
+        {
+            $lookup: {
+                from: "follows",
+                localField: "_id",
+                foreignField: "follower",
+                as: "followings"
+            }
+        },
+        {
+            $addFields: {
+                followersCount: { $size: "$followers" },
+                followingsCount: { $size: "$followings" },
+                isFollowed: {
+                    $cond: {
+                        if: { $in: [req.user?._id, "$followers.follower"] },
+                        then: true,
+                        else: false
+                    }
+                }
+            }
+        },
+        {
+            $match: {
+                isFollowed: false
+            }
+        },
+        {
+            $project: {
+                fullName: 1,
+                username: 1,
+                avatar: 1,
+                bio: 1,
+                knownSkills: 1,
+                interestedSkills: 1,
+                wantToBeHired: 1,
+                followersCount: 1,
+                followingsCount: 1,
+                isFollowed: 1,
+                score: { $meta: "searchScore" }
+            }
+        },
+        {
+            $sort: { score: -1 }
+        },
+        {
+            $limit: 10
+        }
+    ]);
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                suggestedUsers,
+                "Suggested users fetched successfully"
+            )
+        );
+})
+
 export { 
     registerUser,
     loginUser,
@@ -677,5 +783,6 @@ export {
     updateLocation,
     forgotPassword,
     resetPassword,
-    getUserProfile
+    getUserProfile,
+    suggestUsers
 }

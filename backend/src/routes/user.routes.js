@@ -17,7 +17,8 @@ import {
     updateLocation,
     forgotPassword,
     resetPassword,
-    getUserProfile
+    getUserProfile,
+    suggestUsers
 } from '../controllers/user.controller.js'
 
 const router = Router()
@@ -56,6 +57,7 @@ router.route("/add-interested-skills").patch(verifyJWT, addToInterestedSkills)
 router.route("/remove-interested-skills").patch(verifyJWT, removeFromInterestedSkills)
 router.route("/update-location").put(verifyJWT, updateLocation)
 router.route("/get-user-profile/:username").get(verifyJWT, getUserProfile)
+router.route("/suggest-people").get(verifyJWT, suggestUsers)
 
 
 export default router
