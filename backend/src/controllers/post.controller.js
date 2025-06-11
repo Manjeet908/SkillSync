@@ -34,7 +34,8 @@ const createPost = asyncHandler(async (req, res) => {
         description,
         skillShowcasing,
         media: fileUrls,
-        creator: req.user._id
+        creator: req.user._id,
+        creatorUsername: req.user.username
     })
 
     notifyOnNewPost(newPost, req.user)

@@ -27,6 +27,11 @@ const postSchema = new Schema({
         ref: "user",
         required: true
     },
+    creatorUsername: {
+        type: String,
+        required: true,
+        trim: true
+    },
     isPublic: {
         type: Boolean,
         default: true
