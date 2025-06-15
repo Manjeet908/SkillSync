@@ -6,9 +6,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 const searchUsers = asyncHandler(async (req, res) => {
     
-    const { query } = req.query;
+    const { q } = req.query;
 
-    if (!query) {
+    if (!q) {
         throw new ApiError(400, "Search query is required");
     }
 
@@ -17,7 +17,7 @@ const searchUsers = asyncHandler(async (req, res) => {
             {
                 $search: {
                     autocomplete: {
-                        query: query,
+                        query: q,
                         path: "username",
                         fuzzy: {
                             maxEdits: 1,
@@ -49,9 +49,9 @@ const searchUsers = asyncHandler(async (req, res) => {
 });
 
 const searchPosts = asyncHandler(async (req, res) => {
-    const { query } = req.query;
+    const { q } = req.query;
 
-    if (!query) {
+    if (!q) {
         throw new ApiError(400, "Search query is required");
     }
 
@@ -59,7 +59,7 @@ const searchPosts = asyncHandler(async (req, res) => {
         {
             $search: {
                 text: {
-                    query: query,
+                    query: q,
                     path: {
                         wildcard: "*"
                     },

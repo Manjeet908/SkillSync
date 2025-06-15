@@ -25,9 +25,11 @@ const userSchema = new Schema(
             trim: true
         },
         avatar: {
+            default: "http://localhost:8000/images/default_avatar.jpeg",
             type: String, // cloudinary url
         },
         coverImage: {
+            default: "http://localhost:8000/images/default_coverImage.jpg",
             type: String, // cloudinary url
         },
         bio: {
