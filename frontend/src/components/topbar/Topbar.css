@@ -22,9 +22,15 @@
 }
 
 .topbarCenter {
-    flex: 5;
+    flex: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-
+.topbarCenter .search-container {
+    width: 100%;
+    margin: 0;
+}
 .searchbar {
     width: 100%;
     height: 30px;

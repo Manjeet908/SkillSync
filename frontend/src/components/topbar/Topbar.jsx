@@ -7,6 +7,8 @@ import { AuthContext } from "../../context/AuthContext";
 import { useSocket } from '../../context/SocketContext';
 import NotificationPanel from "../notification/NotificationPanel";
 import axiosInstance from "../../api/axios";
+import Searchbar from "../searchbar/Searchbar";
+
 
 export default function Topbar() {
   const { user } = useContext(AuthContext);
@@ -63,12 +65,8 @@ export default function Topbar() {
         </Link>
       </div>
       <div className="topbarCenter">
-        <div className="searchbar">
-          <Search className="searchIcon" />
-          <input
-            placeholder="Search for friend, post or video"
-            className="searchInput"
-          />
+        <div className="topbarCenter">
+          <Searchbar />
         </div>
       </div>
       <div className="topbarRight">
@@ -79,8 +77,8 @@ export default function Topbar() {
               <span className="topbarIconBadge">{notificationCount}</span>
             )}
             {showNotifications && (
-              <NotificationPanel 
-                notifications={notifications} 
+              <NotificationPanel
+                notifications={notifications}
                 onClear={clearNotifications}
               />
             )}
