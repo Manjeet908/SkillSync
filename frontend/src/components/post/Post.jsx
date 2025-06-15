@@ -12,10 +12,8 @@ export default function Post({ post }) {
   const [creator, setCreator] = useState(post.creator);
   const PF = import.meta.env.VITE_APP_PUBLIC_FOLDER;
   const { user: currentUser } = useContext(AuthContext);
-  const location = useLocation();
-  const isProfilePage = location.pathname.includes('/profile/');
-  const isOwnProfile = isProfilePage && location.pathname.includes(`/profile/${currentUser.username}`);
-
+  const isOwnProfile = post.creator?._id === currentUser._id;
+  
   useEffect(() => {
     setIsLiked(post.isLiked || false);
   }, [currentUser._id, post.isLiked]);

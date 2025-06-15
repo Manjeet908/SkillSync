@@ -1,5 +1,7 @@
-import React,{useState,useEffect} from 'react'
-import axios from 'axios'
+import React,{useState,useEffect, useContext} from 'react'
+import { AuthContext } from "../../context/AuthContext";
+import Post from '../post/Post';
+import axiosInstance from '../../api/axios'
 import './YourPost.css'
 
 function YourPost() {
@@ -7,11 +9,23 @@ function YourPost() {
     const [loading,setLoading] = useState(true)
     const [error,setError] = useState(null)
 
+    const { user } = useContext(AuthContext)
+
     useEffect(()=>{
         const fetchPosts = async()=>{
             try{
-                const res=await axios.get('/posts/YourPost')
-                setPosts(res.data)
+                const res=await axiosInstance.get(`/posts/get-user-posts/${user._id}`)
+                if (!res.data || !Array.isArray(res.data.data.docs)) {
+                    console.error("Invalid response data:", res.data);
+                    return;
+                }
+
+                setPosts(
+                res.data.data.docs.sort((p1, p2) => {
+                    return new Date(p2.createdAt) - new Date(p1.createdAt);
+                })
+                );
+                
                 setLoading(false)
             }catch(err){
                 setError(err)
@@ -19,6 +33,7 @@ function YourPost() {
             }
         }
         fetchPosts()
+        
     },[]);
 
     if (loading) return <div className="loading">Loading...</div>;
@@ -32,32 +47,7 @@ function YourPost() {
                     <p className="no-posts-message">You haven't posted anything yet.</p>
                 ) : (
                     posts.map((post)=>(
-                        <div key={post._id} className="your-post-card">
-                            <h3 className="post-title">{post.title}</h3>
-                            {
-                                post.mediaType === 'image' ? (
-                                    <img 
-                                        src={post.mediaUrl} 
-                                        alt={post.title} 
-                                        className="post-media"
-                                    />
-                                ) : (
-                                    <video 
-                                        controls 
-                                        className="post-media"
-                                    >
-                                        <source src={post.mediaUrl} type="video/mp4" />
-                                        Your browser does not support the video tag.
-                                    </video>
-                                )
-                            }
-                            <small className="post-date">Posted on: {new Date(post.createdAt).toLocaleString()}</small>
-                            <p className="post-description">{post.description}</p>
-                            <div className="post-actions">
-                                <button className="edit-button">Edit</button>
-                                <button className="delete-button">Delete</button>
-                            </div>
-                        </div>
+                        <Post post={post} />
                     ))
                 )
             }
