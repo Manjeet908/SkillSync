@@ -1,22 +1,31 @@
 import React,{useState,useEffect, use} from 'react'
 import './Searchbar.css'
-import axios from 'axios';
+import axiosInstance from '../../api/axios';
 function Searchbar() {
-    const [suggestions, setSuggestions] = useState([]);
+    const [searchedUsers, setSearchedUsers] = useState([]);
+    const [searchedPosts, setSearchedPosts] = useState([]);
     const [query,setQuery] = useState('');
     useEffect(() => {
         const fetchSuggestions = async () => {
             if(query.trim()==="")
             {
-                setSuggestions([]);
+                setSearchedUsers([]);
+                setSearchedPosts([]);
                 return;
             }
             try{
-                const res= await axios.get(`http://localhost:8000/api/v1/search?q=${query}`);
-                setSuggestions(res.data.suggestions);
+                const res = await axiosInstance.get(`/search/users?q=${query}`);
+                setSearchedUsers(res.data.data);
             }
             catch(err){
-                console.error("Error fetching suggestions:", err);
+                console.error("Error fetching searched users:", err);
+            }
+            try{
+                const res = await axiosInstance.get(`/search/posts?q=${query}`);
+                setSearchedPosts(res.data.data);
+            }
+            catch(err){
+                console.error("Error fetching searched posts:", err);
             }
         };
         const debounce = setTimeout(fetchSuggestions, 300);
@@ -32,9 +41,9 @@ function Searchbar() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
-      {suggestions.length > 0 && (
+      {searchedUsers.length > 0 && (
         <ul className="suggestions-list">
-          {suggestions.map((item) => (
+          {searchedUsers.map((item) => (
             <li key={item._id} className="suggestion-item">
               {item.username}
             </li>
