@@ -1,20 +1,17 @@
-import React,{useState,useEffect, useContext} from 'react'
-import { AuthContext } from "../../context/AuthContext";
+import {useState,useEffect} from 'react'
 import Post from '../post/Post';
 import axiosInstance from '../../api/axios'
-import './YourPost.css'
+import './LikedPost.css'
 
-function YourPost() {
+function LikedPost() {
     const [posts,setPosts] = useState([])
     const [loading,setLoading] = useState(true)
     const [error,setError] = useState(null)
 
-    const { user } = useContext(AuthContext)
-
     useEffect(()=>{
         const fetchPosts = async()=>{
             try{
-                const res=await axiosInstance.get(`/posts/get-user-posts/${user._id}`)
+                const res=await axiosInstance.get(`likes/posts`)
                 if (!res.data || !Array.isArray(res.data.data.docs)) {
                     console.error("Invalid response data:", res.data);
                     return;
@@ -40,14 +37,14 @@ function YourPost() {
     if (error) return <div className="error">Error: {error.message}</div>;
 
     return (
-        <div className="your-posts-container">
-            <h2 className="your-posts-title">Your Posts</h2>
+        <div className="liked-posts-container">
+            <h2 className="liked-posts-title">Liked Posts</h2>
             {
                 posts.length === 0 ? (
                     <p className="no-posts-message">You haven't posted anything yet.</p>
                 ) : (
                     posts.map((post)=>(
-                        <Post post={post} key={post._id}/>
+                        <Post post={post.post} key={post._id}/>
                     ))
                 )
             }
@@ -55,4 +52,4 @@ function YourPost() {
     )
 }
 
-export default YourPost
+export default LikedPost

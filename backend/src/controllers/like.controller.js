@@ -130,6 +130,11 @@ const getLikedPosts = asyncHandler(async (req, res) => {
                     $unwind: "$post.creator"
                 },
                 {
+                    $addFields: {
+                        "post.isLiked": true
+                    }
+                },
+                {
                     $project: {
                         "post.creator.password": 0,
                         "post.creator.email": 0
