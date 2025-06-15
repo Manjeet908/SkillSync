@@ -9,6 +9,7 @@ import Register from "./pages/register/Register";
 import Courses from "./pages/courses/Courses";
 import EventAlert from "./pages/eventAlert/EventAlert";
 import Explore from "./pages/explore/Explore";
+import YourPost from "./components/YourPost/YourPost";
 
 function App() {
   const { user } = useContext(AuthContext);
@@ -23,6 +24,7 @@ function App() {
         <Route path="/courses" element={user ? <Courses /> : <Navigate to="/register" />} />
         <Route path="/event-alert" element={user ? <EventAlert /> : <Navigate to="/register" />} />
         <Route path="/explore" element={user ? <Explore /> : <Navigate to="/register" />} />
+        <Route path="/your-posts" element={user ? <YourPost /> : <Navigate to="/register" />} />
       </Routes>
     </Router>
   );

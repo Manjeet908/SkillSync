@@ -43,12 +43,6 @@ export default function Register() {
         </div>
         <div className="loginRight">
           <form className="loginBox" onSubmit={handleClick}>
-            <input 
-              placeholder="Full Name" 
-              required 
-              ref={fullname} 
-              className="loginInput" 
-            />
             <input
               placeholder="Username"
               required
@@ -69,13 +63,6 @@ export default function Register() {
               className="loginInput"
               type="password"
               minLength="6"
-            />
-            <input
-              placeholder="Password Again"
-              required
-              ref={passwordAgain}
-              className="loginInput"
-              type="password"
             />
             <button className="loginButton" type="submit">
               Sign Up
