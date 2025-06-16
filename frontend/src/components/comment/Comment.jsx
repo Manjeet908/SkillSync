@@ -17,6 +17,7 @@ function Comment({ postId, currentUser }) {
             limit: 10,
           },
         });
+        // console.log(res.data.data)
         setComments(res.data.data.docs || []); // response format from your backend
       } catch (err) {
         console.error("Error fetching comments:", err);
@@ -35,10 +36,11 @@ function Comment({ postId, currentUser }) {
     if (!newComment.trim()) return;
 
     try {
-      const res = await axiosInstance.post(`/comments/${postId}`, {
+      const res = await axiosInstance.post(`/comments/new/${postId}`, {
         content: newComment,
         type: "normal", // or "feedback" if needed
       });
+      console.log(res.data.data)
       setComments((prev) => [...prev, res.data.data]); // assuming new comment is returned as res.data.data
       setNewComment("");
       scrollToBottom();
@@ -50,7 +52,7 @@ function Comment({ postId, currentUser }) {
   // Delete a comment
   const handleDelete = async (commentId) => {
     try {
-      await axiosInstance.delete(`/comments/${commentId}`);
+      await axiosInstance.delete(`/comments/delete/${commentId}`);
       setComments((prev) => prev.filter((c) => c._id !== commentId));
     } catch (err) {
       console.error("Error deleting comment:", err);

@@ -27,10 +27,17 @@ const addComment = asyncHandler(async (req, res) => {
             throw new ApiError(500, "There was a problem while creating the comment")
         }
 
+        const responseComment = comment.toObject()
+        responseComment.author = {
+            _id: user._id,
+            username: user.username,
+            avatar: user.avatar
+        }
+
         return res
         .status(200)
         .json(
-            new ApiResponse(200, comment, "Comment created successfully")
+            new ApiResponse(200, responseComment, "Comment created successfully")
         )
     } catch (error) {
         throw new ApiError(500, error.message || "There was a problem while creating the comment")
