@@ -1,0 +1,41 @@
+.comments-container {
+    padding: 1rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.comment-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    align-items: center;
+}
+
+.comment-time {
+    color: #999;
+    font-size: 0.8rem;
+    margin-left: 0.5rem;
+}
+
+.delete-btn {
+    background: none;
+    color: red;
+    border: none;
+    cursor: pointer;
+}
+
+.comment-input-area {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.comment-input-area input {
+    flex: 1;
+    padding: 0.5rem;
+}
+
+.emoji-picker {
+    position: absolute;
+    z-index: 100;
+}

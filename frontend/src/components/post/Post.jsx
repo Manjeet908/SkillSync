@@ -1,25 +1,33 @@
 import "./post.css";
-import { MoreVert, Favorite, FavoriteBorder, Delete } from "@mui/icons-material";
+import {
+  MoreVert,
+  Favorite,
+  FavoriteBorder,
+  Delete,
+} from "@mui/icons-material";
 import { useContext, useEffect, useState } from "react";
 import axiosInstance from "../../api/axios";
 import * as timeago from "timeago.js";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import Comment from "../comment/Comment"; // ✅ Correct import
 
 export default function Post({ post }) {
   const [like, setLike] = useState(post.likesCount);
   const [isLiked, setIsLiked] = useState(post.isLiked || false);
   const [creator, setCreator] = useState(post.creator);
+  const [showComments, setShowComments] = useState(false); // ✅ added state
+
   const PF = import.meta.env.VITE_APP_PUBLIC_FOLDER;
   const { user: currentUser } = useContext(AuthContext);
   const isOwnProfile = post.creator?._id === currentUser._id;
-  
+
   useEffect(() => {
     setIsLiked(post.isLiked || false);
   }, [currentUser._id, post.isLiked]);
 
   useEffect(() => {
-    setCreator(post.creator)
+    setCreator(post.creator);
   }, [post._id]);
 
   const likeHandler = async () => {
@@ -54,7 +62,7 @@ export default function Post({ post }) {
               <img
                 className="postProfileImg"
                 src={
-                    creator.avatar ? creator.avatar : PF + "assets/person/1.jpg"
+                  creator.avatar ? creator.avatar : PF + "assets/person/1.jpg"
                 }
                 alt=""
               />
@@ -69,6 +77,7 @@ export default function Post({ post }) {
             <MoreVert />
           </div>
         </div>
+
         <div className="postCenter">
           <span className="postText">{post?.description}</span>
           {post.media && post.media.length > 0 && (
@@ -76,13 +85,9 @@ export default function Post({ post }) {
               {post.media.map((mediaUrl, index) => (
                 <div key={index} className="mediaItem">
                   {isVideo(mediaUrl) ? (
-                    <video 
-                      className="postVideo"
-                      controls
-                      src={mediaUrl}
-                    />
+                    <video className="postVideo" controls src={mediaUrl} />
                   ) : (
-                    <img 
+                    <img
                       className="postImg"
                       src={mediaUrl}
                       alt={`Post media ${index + 1}`}
@@ -93,6 +98,7 @@ export default function Post({ post }) {
             </div>
           )}
         </div>
+
         <div className="postBottom">
           <div className="postBottomLeft">
             {isLiked ? (
@@ -102,16 +108,22 @@ export default function Post({ post }) {
                 style={{ color: "red" }}
               />
             ) : (
-              <FavoriteBorder
-                className="likeIcon"
-                onClick={likeHandler}
-              />
+              <FavoriteBorder className="likeIcon" onClick={likeHandler} />
             )}
             <span className="postLikeCounter">{like} people like it</span>
           </div>
-          {/* TODO */}
+
           <div className="postBottomRight">
-            <span className="postCommentText">{post.comment} comments</span>
+            <button
+              className="postCommentText"
+              onClick={() => setShowComments((prev) => !prev)}
+            >
+              {showComments ? "Hide Comments" : "Show Comments"}
+            </button>
+
+            {showComments && (
+              <Comment postId={post._id} currentUser={currentUser} />
+            )}
           </div>
         </div>
       </div>
