@@ -276,7 +276,7 @@ const getCurrentUser = asyncHandler(async(req, res) => {
 })
 
 const updateAccountDetails = asyncHandler(async(req, res) => {
-    const { fullName, email, bio, knownSkills, wantToBeHired } = req.body
+    const { fullName, email, bio, wantToBeHired } = req.body
 
     const user = await User.findById(req.user?._id).select("-password")
 
@@ -295,12 +295,6 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
     }
     if(wantToBeHired !== undefined) {
         user.wantToBeHired = wantToBeHired
-    }
-    if(knownSkills) {
-        if (!Array.isArray(knownSkills)) {
-            throw new ApiError(400, "knownSkills must be an array")
-        }
-        user.knownSkills = mapSkillArray(knownSkills)
     }
 
     await user.save({validateBeforeSave: false})
@@ -402,6 +396,58 @@ const updateWantToBeHired = asyncHandler(async(req, res) => {
             200,
             expandUserSkills(user),
             "wantToBeHired field updated successfully"
+        )
+    )
+})
+
+const addToKnownSkills = asyncHandler(async(req, res) => {
+    const { skill } = req.body
+
+    if(!skill)
+        throw new ApiError(400, "skill field is required")
+
+    const user = await User.findById(req.user._id).select("-password")
+    if(!user)
+        throw new ApiError(500, "Unable to fetch User Id")
+
+    const skillId = mapSkill(skill);
+    if(!user.knownSkills.includes(skillId)) {
+        user.knownSkills.push(skillId)
+        await user.save({validateBeforeSave: false})
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            expandUserSkills(user),
+            "Skill added to known skills successfully"
+        )
+    )
+})
+
+const removeFromKnownSkills = asyncHandler(async(req, res) => {
+    const { skill } = req.body
+    if(!skill)
+        throw new ApiError(400, "skill field is required")
+    
+    const user = await User.findById(req.user._id).select("-password")
+    if(!user)
+        throw new ApiError(500, "Unable to fetch User Id")
+    
+    const skillId = mapSkill(skill);
+    if(user.knownSkills.includes(skillId)) {
+        user.knownSkills = user.knownSkills.filter(s => s !== skillId)
+        await user.save({validateBeforeSave: false})
+    }
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            expandUserSkills(user),
+            "Skill removed from known skills successfully"
         )
     )
 })
@@ -668,7 +714,7 @@ const getUserProfile = asyncHandler(async(req, res) => {
     )
 })
 
-// To do
+
 const suggestUsers = asyncHandler(async (req, res) => {
     
     const currentUser = req.user;
@@ -765,12 +811,16 @@ const suggestUsers = asyncHandler(async (req, res) => {
         }
     ]);
 
+    const resUsers = suggestedUsers.map(user => {
+        return expandUserSkills(user);
+    });
+
     return res
         .status(200)
         .json(
             new ApiResponse(
                 200,
-                suggestedUsers,
+                resUsers,
                 "Suggested users fetched successfully"
             )
         );
@@ -787,6 +837,8 @@ export {
     updateAvatar,
     updateCoverImage,
     updateWantToBeHired,
+    addToKnownSkills,
+    removeFromKnownSkills,
     addToInterestedSkills,
     removeFromInterestedSkills, 
     updateLocation,

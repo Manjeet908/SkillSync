@@ -7,7 +7,7 @@ import {
     deletePost,
     getPostById,
     getAllPosts,
-    getCurrentUserPosts, // no need
+    getCurrentUserPosts, // needed for unpublished posts
     getUserPosts
 } from "../controllers/post.controller.js"
 

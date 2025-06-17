@@ -100,14 +100,14 @@ const getCreatorFollowers = asyncHandler(async (req, res) => {
     const creatorId = creator._id
 
     try {
-        const followers = await Follow.find({creator: creatorId}).populate("follower")
+        const followers = await Follow.find({ creator: creatorId }).populate("follower", "-password -refreshToken");       
     
         // only null throws error, empty array is truthy in JS therefore it works fine for 0 size
         if(!followers){
             throw new ApiError(404, "No followers found")
         }
 
-        const resFollowers = followers.map(follow => expandUserSkills(follow.creator));
+        const resFollowers = followers.map(follow => expandUserSkills(follow.follower));
     
         return res
         .status(200)
@@ -132,8 +132,7 @@ const getUserFollowings = asyncHandler(async (req, res) => {
     const userId = user._id
 
     try {
-        const followings = await Follow.find({follower: userId}).populate("creator")
-    
+        const followings = await Follow.find({ follower: userId }).populate("creator", "-password -refreshToken");    
         // only null throws error, empty array is truthy in JS therefore it works fine for 0 size
         if(!followings){
             throw new ApiError(404, "No followings found")
