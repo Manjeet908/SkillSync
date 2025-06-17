@@ -55,7 +55,7 @@ io.on('connection', (socket) => {
         try {
             // Verify that the userId matches the authenticated user
             if (userId !== socket.user._id.toString()) {
-                throw new Error("Unauthorized: User ID mismatch")
+                throw new Error(`Unauthorized: User ID mismatch, ${userId}, ${socket.user._id.toString()}`)
             }
             
             socket.join(userId)

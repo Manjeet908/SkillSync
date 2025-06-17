@@ -18,9 +18,12 @@ const postSchema = new Schema({
         }
     ],
     skillShowcasing: {
-        type: String,
-        // enum: ["web development", "mobile development", "graphic design", "music", "dance", "photography", "art", "writing", "content creation", "other"],
-        default: "other"
+        type: Number,
+        default: 0, // 0 = "Other"
+        validate: {
+        validator: (val) => val >= 0 && val < 50,
+        message: "Invalid skill index"
+        }
     },
     creator: {
         type: Schema.Types.ObjectId,

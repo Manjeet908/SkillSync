@@ -7,6 +7,7 @@ import { Notification } from '../models/notification.model.js';
 import { Like } from '../models/like.model.js';
 import { Comment } from '../models/comment.model.js';
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
+import { mapSkill, expandPostSkill, expandUserSkills } from "../utils/skills.js"
 import mongoose from 'mongoose';
 
 const createPost = asyncHandler(async (req, res) => {
@@ -32,7 +33,7 @@ const createPost = asyncHandler(async (req, res) => {
     const newPost = await Post.create({
         title,
         description,
-        skillShowcasing,
+        skillShowcasing: mapSkill(skillShowcasing),
         media: fileUrls,
         creator: req.user._id,
         creatorUsername: req.user.username
@@ -43,7 +44,7 @@ const createPost = asyncHandler(async (req, res) => {
     return res
     .status(201)
     .json(
-        new ApiResponse(201, 'Post created', newPost)
+        new ApiResponse(201, expandPostSkill(newPost), 'Post created')
     )
 })
 
@@ -67,7 +68,7 @@ const togglePublish = asyncHandler(async (req, res) => {
     return res
     .status(200)
     .json(
-        new ApiResponse(200, updatedPost, 'Post updated')
+        new ApiResponse(200, expandPostSkill(updatedPost), 'Post updated')
     )
 })
 
@@ -100,7 +101,7 @@ const deletePost = asyncHandler(async (req, res) => {
     return res
     .status(200)
     .json(
-        new ApiResponse(200, deletedPost, 'Post deleted')
+        new ApiResponse(200, expandPostSkill(deletedPost), 'Post deleted')
     )
 
 })
@@ -122,7 +123,7 @@ const getPostById = asyncHandler(async (req, res) => {
     return res
     .status(200)
     .json(
-        new ApiResponse(200, post, 'Post found')
+        new ApiResponse(200, expandPostSkill(post), 'Post found')
     )
 })
 
@@ -180,10 +181,17 @@ const getAllPosts = asyncHandler(async (req, res) => {
         options
     );
 
+    const resPosts = posts.docs.map((post) => { 
+        const postCreator = expandUserSkills(post.creator);
+        const resPost = expandPostSkill(post)
+        resPost.creator = postCreator
+        return resPost
+    });
+
     return res
     .status(200)
     .json(
-        new ApiResponse(200, posts, "Posts fetched")
+        new ApiResponse(200, resPosts, "Posts fetched")
     );
 })
 
@@ -242,10 +250,17 @@ const getCurrentUserPosts = asyncHandler(async (req, res) => {
         options
     );
 
+    const resPosts = posts.docs.map((post) => { 
+        const postCreator = expandUserSkills(post.creator);
+        const resPost = expandPostSkill(post)
+        resPost.creator = postCreator
+        return resPost
+    });
+
     return res
     .status(200)
     .json(
-        new ApiResponse(200, posts, "Posts fetched")
+        new ApiResponse(200, resPosts, "Posts fetched")
     );
 })
 
@@ -317,10 +332,17 @@ const getUserPosts = asyncHandler(async (req, res) => {
         options
     );
 
+    const resPosts = posts.docs.map((post) => { 
+        const postCreator = expandUserSkills(post.creator);
+        const resPost = expandPostSkill(post)
+        resPost.creator = postCreator
+        return resPost
+    });
+    
     return res
     .status(200)
     .json(
-        new ApiResponse(200, posts, "Posts fetched")
+        new ApiResponse(200, resPosts, "Posts fetched")
     );
 })
 

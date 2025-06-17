@@ -25,7 +25,7 @@ const userSchema = new Schema(
             trim: true
         },
         avatar: {
-            default: "http://localhost:8000/images/default_avatar.jpeg",
+            default: "http://localhost:8000/images/default_avatar.jpg",
             type: String, // cloudinary url
         },
         coverImage: {
@@ -54,16 +54,22 @@ const userSchema = new Schema(
             }
         },
         knownSkills: [
-            {
-                type: String,
-                trim: true
+        {
+            type: Number,
+            validate: {
+            validator: (val) => val >= 0 && val < 50,
+            message: "Invalid skill index"
             }
+        }
         ],
         interestedSkills: [
-            {
-                type: String,
-                trim: true
+        {
+            type: Number,
+            validate: {
+            validator: (val) => val >= 0 && val < 50,
+            message: "Invalid skill index"
             }
+        }
         ],
         wantToBeHired: {
             type: Boolean,
@@ -82,7 +88,8 @@ const userSchema = new Schema(
     }
 )
 
-userSchema.index({ skills: 1 })
+userSchema.index({ knownSkills: 1 })
+userSchema.index({ interestedSkills: 1 })
 userSchema.index({location: "2dsphere"})
 
 userSchema.pre("save", async function (next) {

@@ -15,13 +15,13 @@ function YourPost() {
         const fetchPosts = async()=>{
             try{
                 const res=await axiosInstance.get(`/posts/get-user-posts/${user._id}`)
-                if (!res.data || !Array.isArray(res.data.data.docs)) {
+                if (!res.data || !Array.isArray(res.data.data)) {
                     console.error("Invalid response data:", res.data);
                     return;
                 }
 
                 setPosts(
-                res.data.data.docs.sort((p1, p2) => {
+                res.data.data.sort((p1, p2) => {
                     return new Date(p2.createdAt) - new Date(p1.createdAt);
                 })
                 );

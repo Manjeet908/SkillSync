@@ -3,6 +3,7 @@ import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/AsyncHandler.js"
 import {User} from "../models/user.model.js"
+import {expandUserSkills} from "../utils/skills.js"
 
 const toggleFollow = asyncHandler(async (req, res) => {
 
@@ -95,7 +96,6 @@ const getCreatorFollowers = asyncHandler(async (req, res) => {
     if(!creator){
         throw new ApiError(404, "Creator not found")
     }
-    console.log("creator", creator);
     
     const creatorId = creator._id
 
@@ -106,11 +106,13 @@ const getCreatorFollowers = asyncHandler(async (req, res) => {
         if(!followers){
             throw new ApiError(404, "No followers found")
         }
+
+        const resFollowers = followers.map(follow => expandUserSkills(follow.creator));
     
         return res
         .status(200)
         .json(
-            new ApiResponse(200, followers, "Followers found successfully")
+            new ApiResponse(200, resFollowers, "Followers found successfully")
         )
     } catch (error) {
         throw new ApiError(500, error.message || "There was a problem while fetching followers")
@@ -136,11 +138,13 @@ const getUserFollowings = asyncHandler(async (req, res) => {
         if(!followings){
             throw new ApiError(404, "No followings found")
         }
+
+        const resFollowings = followings.map(follow => expandUserSkills(follow.creator));
     
         return res
         .status(200)
         .json(
-            new ApiResponse(200, followings, "Followings found successfully")
+            new ApiResponse(200, resFollowings, "Followings found successfully")
         )
     } catch (error) {
         throw new ApiError(500, error?.message || "There was a problem while fetching followings")

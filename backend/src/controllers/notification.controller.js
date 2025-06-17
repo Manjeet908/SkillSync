@@ -39,7 +39,7 @@ const notifyOnNewPost = async(post, creator) => {
     } catch (error) {
         console.error("Error while notifying followers after post: ", post);        
     }
-    console.log("Ending")
+
 }
 
 const getUserNotifications = asyncHandler(async(req, res) => {

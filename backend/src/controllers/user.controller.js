@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
+import { mapSkill, mapSkillArray, expandUserSkills } from "../utils/skills.js"
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import sendEmail from "../utils/sendEmail.js";
@@ -18,8 +19,12 @@ const registerUser = asyncHandler(async(req, res) => {
     // check for user creation
     // return res
 
-    const { username, email, fullName, password, bio, location, knownSkills, interestedSkills, wantToBeHired } = req.body
+    const { username, email, fullName, password, bio, location, knownSkills = [], interestedSkills = [], wantToBeHired } = req.body
 
+    // Validate skills arrays
+    if (!Array.isArray(knownSkills) || !Array.isArray(interestedSkills)) {
+        throw new ApiError(400, "knownSkills and interestedSkills must be arrays")
+    }
 
     let avatarLocalPath;
     if (req.files && Array.isArray(req.files.avatar) && req.files.avatar.length > 0) {
@@ -62,12 +67,12 @@ const registerUser = asyncHandler(async(req, res) => {
         username,
         email,
         fullName,
-        avatar: avatar?.url || "",
-        coverImage: coverImage?.url || "",
+        avatar: avatar?.url || "http://localhost:8000/images/default_avatar.jpg",
+        coverImage: coverImage?.url || "http://localhost:8000/images/default_coverImage.jpg",
         bio: bio || "",
         location: userLocation,
-        knownSkills: knownSkills || [],
-        interestedSkills: interestedSkills || [],
+        knownSkills: mapSkillArray(knownSkills),
+        interestedSkills: mapSkillArray(interestedSkills),
         wantToBeHired: wantToBeHired || false,
         password        
     })
@@ -81,7 +86,7 @@ const registerUser = asyncHandler(async(req, res) => {
     }
 
     return res.status(200).json(
-        new ApiResponse(200, createdUser, "User Created Successfully")
+        new ApiResponse(200, expandUserSkills(createdUser), "User Created Successfully")
     )
 
 })
@@ -155,9 +160,7 @@ const loginUser = asyncHandler(async(req, res) => {
     .json(
         new ApiResponse(
             200,
-            {
-                user: loggedInUser, accessToken, refreshToken
-            },
+            expandUserSkills(loggedInUser),
             "user logged in successfully"
         )
     )
@@ -266,14 +269,13 @@ const getCurrentUser = asyncHandler(async(req, res) => {
     .json(
         new ApiResponse(
             200,
-            req.user,
+            expandUserSkills(req.user),
             "Current User Sent"
         )
     )
 })
 
 const updateAccountDetails = asyncHandler(async(req, res) => {
-    // add more things to update later
     const { fullName, email, bio, knownSkills, wantToBeHired } = req.body
 
     const user = await User.findById(req.user?._id).select("-password")
@@ -291,18 +293,21 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
     if(bio) {
         user.bio = bio
     }
-    if(knownSkills !== undefined && Array.isArray(knownSkills)) {
-        user.knownSkills = knownSkills
-    }
     if(wantToBeHired !== undefined) {
         user.wantToBeHired = wantToBeHired
+    }
+    if(knownSkills) {
+        if (!Array.isArray(knownSkills)) {
+            throw new ApiError(400, "knownSkills must be an array")
+        }
+        user.knownSkills = mapSkillArray(knownSkills)
     }
 
     await user.save({validateBeforeSave: false})
 
     return res
     .status(200)
-    .json(new ApiResponse(200, user, "Account details updated successfully"))
+    .json(new ApiResponse(200, expandUserSkills(user), "Account details updated successfully"))
 })
 
 const updateAvatar = asyncHandler(async(req, res) => {
@@ -333,7 +338,7 @@ const updateAvatar = asyncHandler(async(req, res) => {
     .json(
         new ApiResponse(
             200,
-            userObject,
+            expandUserSkills(userObject),
             "Avatar Updated Successfully"
         )
     )
@@ -368,7 +373,7 @@ const updateCoverImage = asyncHandler(async(req, res) => {
     .json(
         new ApiResponse(
             200,
-            userObject,
+            expandUserSkills(userObject),
             "Cover Image Updated Successfully"
         )
     )
@@ -395,7 +400,7 @@ const updateWantToBeHired = asyncHandler(async(req, res) => {
     .json(
         new ApiResponse(
             200,
-            user,
+            expandUserSkills(user),
             "wantToBeHired field updated successfully"
         )
     )
@@ -405,14 +410,15 @@ const addToInterestedSkills = asyncHandler(async(req, res) => {
     const { skill } = req.body
 
     if(!skill)
-        throw new ApiError(400, "skills field is required")
+        throw new ApiError(400, "skill field is required")
 
     const user = await User.findById(req.user._id).select("-password")
     if(!user)
         throw new ApiError(500, "Unable to fetch User Id")
 
-    if(!user.interestedSkills.includes(skill)) {
-        user.interestedSkills.push(skill)
+    const skillId = mapSkill(skill);
+    if(!user.interestedSkills.includes(skillId)) {
+        user.interestedSkills.push(skillId)
         await user.save({validateBeforeSave: false})
     }
 
@@ -421,8 +427,8 @@ const addToInterestedSkills = asyncHandler(async(req, res) => {
     .json(
         new ApiResponse(
             200,
-            user,
-            "Skills updated successfully"
+            expandUserSkills(user),
+            "Skill added to interested skills successfully"
         )
     )
 })
@@ -430,14 +436,15 @@ const addToInterestedSkills = asyncHandler(async(req, res) => {
 const removeFromInterestedSkills = asyncHandler(async(req, res) => {
     const { skill } = req.body
     if(!skill)
-        throw new ApiError(400, "skills field is required")
+        throw new ApiError(400, "skill field is required")
     
     const user = await User.findById(req.user._id).select("-password")
     if(!user)
         throw new ApiError(500, "Unable to fetch User Id")
     
-    if(user.interestedSkills.includes(skill)) {
-        user.interestedSkills = user.interestedSkills.filter(s => s !== skill)
+    const skillId = mapSkill(skill);
+    if(user.interestedSkills.includes(skillId)) {
+        user.interestedSkills = user.interestedSkills.filter(s => s !== skillId)
         await user.save({validateBeforeSave: false})
     }
     return res
@@ -445,8 +452,8 @@ const removeFromInterestedSkills = asyncHandler(async(req, res) => {
     .json(
         new ApiResponse(
             200,
-            user,
-            "Skills updated successfully"
+            expandUserSkills(user),
+            "Skill removed from interested skills successfully"
         )
     )
 })
@@ -469,7 +476,7 @@ const updateLocation = asyncHandler(async(req, res) => {
     .json(
         new ApiResponse(
             200,
-            user,
+            expandUserSkills(user),
             "Location updated successfully"
         )
     )
@@ -657,10 +664,11 @@ const getUserProfile = asyncHandler(async(req, res) => {
     return res
     .status(200)
     .json(
-        new ApiResponse(200, userProfile[0], "User channel fetched successfully")
+        new ApiResponse(200, expandUserSkills(userProfile[0]), "User channel fetched successfully")
     )
 })
 
+// To do
 const suggestUsers = asyncHandler(async (req, res) => {
     
     const currentUser = req.user;
@@ -672,31 +680,12 @@ const suggestUsers = asyncHandler(async (req, res) => {
 
     const suggestedUsers = await User.aggregate([
         {
-            $search: {
-                compound: {
-                    should: [
-                        {
-                            text: {
-                                query: knownSkills,
-                                path: "knownSkills",
-                                score: { boost: { value: 2 } }
-                            }
-                        },
-                        {
-                            text: {
-                                query: interestedSkills,
-                                path: "interestedSkills",
-                                score: { boost: { value: 1 } }
-                            }
-                        }
-                    ],
-                    minimumShouldMatch: 1
-                }
-            }
-        },
-        {
             $match: {
-                _id: { $ne: req.user?._id } // Exclude current user
+                _id: { $ne: req.user?._id }, // Exclude current user
+                $or: [
+                    { knownSkills: { $in: knownSkills } },
+                    { interestedSkills: { $in: interestedSkills } }
+                ]
             }
         },
         {
@@ -725,6 +714,26 @@ const suggestUsers = asyncHandler(async (req, res) => {
                         then: true,
                         else: false
                     }
+                },
+                // Calculate relevance score based on matching skills
+                relevanceScore: {
+                    $add: [
+                        {
+                            $size: {
+                                $setIntersection: ["$knownSkills", knownSkills]
+                            }
+                        },
+                        {
+                            $multiply: [
+                                {
+                                    $size: {
+                                        $setIntersection: ["$interestedSkills", interestedSkills]
+                                    }
+                                },
+                                0.5 // Give less weight to interested skills matches
+                            ]
+                        }
+                    ]
                 }
             }
         },
@@ -745,11 +754,11 @@ const suggestUsers = asyncHandler(async (req, res) => {
                 followersCount: 1,
                 followingsCount: 1,
                 isFollowed: 1,
-                score: { $meta: "searchScore" }
+                relevanceScore: 1
             }
         },
         {
-            $sort: { score: -1 }
+            $sort: { relevanceScore: -1 }
         },
         {
             $limit: 10

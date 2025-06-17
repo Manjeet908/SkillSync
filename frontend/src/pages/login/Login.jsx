@@ -19,7 +19,7 @@ export default function Login() {
     try {
       const res = await axiosInstance.post("/users/login", user);
       const userDetails = {
-        ...res.data.data.user,
+        ...res.data.data,
         accessToken: res.data.data.accessToken,
         refreshToken: res.data.data.refreshToken
       };

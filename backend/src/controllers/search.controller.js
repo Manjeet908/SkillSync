@@ -2,7 +2,8 @@ import { User } from "../models/user.model.js";
 import { Post } from "../models/post.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { asyncHandler } from "../utils/AsyncHandler.js";
+import { expandPostSkill } from "../utils/skills.js"
 
 const searchUsers = asyncHandler(async (req, res) => {
     
@@ -105,8 +106,10 @@ const searchPosts = asyncHandler(async (req, res) => {
         }
     ]);
 
+    const resPosts = posts.map(post => expandPostSkill(post));
+
     return res.status(200).json(
-        new ApiResponse(200, posts, "Posts fetched successfully")
+        new ApiResponse(200, resPosts, "Posts fetched successfully")
     );
 });
 

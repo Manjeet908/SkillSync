@@ -3,6 +3,7 @@ import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/AsyncHandler.js"
 import {Like} from "../models/like.model.js"
 import {isValidObjectId} from "mongoose"
+import { expandPostSkill, expandUserSkills } from "../utils/skills.js"
 
 const togglePostLike = asyncHandler(async (req, res) => {
     const { postId } = req.params
@@ -130,23 +131,40 @@ const getLikedPosts = asyncHandler(async (req, res) => {
                     $unwind: "$post.creator"
                 },
                 {
+                    $lookup: {
+                        from: "likes",
+                        localField: "post._id",
+                        foreignField: "post",
+                        as: "postLikes"
+                    }
+                },
+                {
                     $addFields: {
+                        "post.likesCount": { $size: "$postLikes" },
                         "post.isLiked": true
                     }
                 },
                 {
                     $project: {
                         "post.creator.password": 0,
-                        "post.creator.email": 0
+                        "post.creator.email": 0,
+                        "postLikes": 0
                     }
                 }
             ], options)
         )
 
+        const resPosts = likedPosts.docs.map((post) => {             
+            const postCreator = expandUserSkills(post.post.creator);
+            const resPost = expandPostSkill(post.post)
+            resPost.creator = postCreator
+            return resPost
+        });
+
         return res
         .status(200)
         .json(
-            new ApiResponse(200, likedPosts, "Liked posts fetched successfully")
+            new ApiResponse(200, resPosts, "Liked posts fetched successfully")
         )
     } catch (error) {
         throw new ApiError(500, error.message || "There was a problem while fetching liked posts")
