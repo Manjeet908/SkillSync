@@ -3,31 +3,31 @@ const skills = [
         id: 0,
         name: "Other",
         description: "",
-        image: "/images/other.png",
+        image: "https://res.cloudinary.com/vtubecloud/image/upload/v1750181963/pexels-anntarazevich-5598301_arihdy.jpg",
     },
     {
         id: 1,
         name: "Graphic Design",
         description: "Photoshop, Illustrator",
-        image: "/images/graphic.png",
+        image: "https://res.cloudinary.com/vtubecloud/image/upload/v1750180840/graphic-design_ltmh3b.jpg",
     },
     {
         id: 2,
         name: "Photography",
         description: "DSLR, Editing",
-        image: "/images/photo.png",
+        image: "https://res.cloudinary.com/vtubecloud/image/upload/v1750181242/pexels-alex-andrews-271121-821749_lcqrha.jpg",
     },
     {
         id: 3,
         name: "Music",
         description: "Instruments, Vocal",
-        image: "/images/music.png",
+        image: "https://res.cloudinary.com/vtubecloud/image/upload/v1750181749/pexels-olly-3775132_hhwmdx.jpg",
     },
     {
         id: 4,
         name: "Web Development",
         description: "HTML, CSS, React",
-        image: "/images/web.png",
+        image: "https://res.cloudinary.com/vtubecloud/image/upload/v1750181411/pexels-pixabay-276452_fydyst.jpg",
     },
 ];
 

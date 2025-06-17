@@ -17,9 +17,15 @@ function Explore() {
     fetchSkills();
   }, []);
 
-  const handleFollow = async (id) => {
+  const handleFollow = async (skill) => {
     try {
-      const res = await axiosInstance.post(`/skills/follow/${id}`);
+      if(skill.isFollowed) {
+        const res = await axiosInstance.post(`/users/remove-interested-skill/${skill.name}`);
+      }
+      else {
+        const res = await axiosInstance.post(`/users/add-interested-skill${skill.name}`)
+      }
+
       setSkills(prev =>
         prev.map(skill =>
           skill._id === id ? { ...skill, isFollowed: !skill.isFollowed } : skill
@@ -35,11 +41,11 @@ function Explore() {
       <h1>Explore New Skills</h1>
       <div className='skill-grid'>
         {skills.map((skill) => (
-          <div className='skill-card' key={skill._id}>
+          <div className='skill-card' key={skill.id}>
             <img src={skill.image} alt={skill.name} />
             <h3>{skill.name}</h3>
             <p>{skill.description}</p>
-            <button onClick={() => handleFollow(skill._id)}>
+            <button onClick={() => handleFollow(skill)}>
               {skill.isFollowed ? "Unfollow" : "Follow"}
             </button>
           </div>
