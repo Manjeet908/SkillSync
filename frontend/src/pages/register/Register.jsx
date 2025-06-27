@@ -44,12 +44,6 @@ export default function Register() {
         <div className="loginRight">
           <form className="loginBox" onSubmit={handleClick}>
             <input
-              placeholder="Name"
-              required
-              ref={fullname}
-              className="loginInput"
-            />
-            <input
               placeholder="Username"
               required
               ref={username}
