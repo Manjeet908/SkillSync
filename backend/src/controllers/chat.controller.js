@@ -1,29 +1,28 @@
-const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
-const cors = require("cors");
+import Chat from "../models/chat.model.js";
 
-const app = express();
-app.use(cors());
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-  },
-});
+// Get chat history between two users
+export const getChatHistory = async (req, res) => {
+  const { userId1, userId2 } = req.params;
+  try {
+    const messages = await Chat.find({
+      $or: [
+        { sender: userId1, receiver: userId2 },
+        { sender: userId2, receiver: userId1 }
+      ]
+    }).sort({ timestamp: 1 });
+    res.json(messages);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch chat history" });
+  }
+};
 
-io.on("connection", socket => {
-  console.log("User connected:", socket.id);
-
-  socket.on("send_message", data => {
-    io.emit("receive_message", data); // Broadcast to all clients
-  });
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-  });
-});
-
-server.listen(3001, () => {
-  console.log("Server is running on port 8000");
-});
+// Save a new message
+export const saveMessage = async (req, res) => {
+  const { sender, receiver, message } = req.body;
+  try {
+    const newMessage = await Chat.create({ sender, receiver, message });
+    res.status(201).json(newMessage);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to save message" });
+  }
+};

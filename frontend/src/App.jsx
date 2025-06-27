@@ -8,7 +8,7 @@ import Profile from "./pages/profile/Profile";
 import Register from "./pages/register/Register";
 import YourPost from "./components/YourPost/YourPost";
 import LikedPost from "./components/LikedPost/LikedPost";
-import Chat from "./components/chat/Chat";
+import Chat from "./components/groupchat/Chat";
 
 function App() {
   const { user } = useContext(AuthContext);
@@ -22,7 +22,7 @@ function App() {
         <Route path="/profile/:username" element={<Profile />} />
         <Route path="/your-posts" element={user ? <YourPost /> : <Navigate to="/register" />} />
         <Route path="/liked-posts" element={user ? <LikedPost /> : <Navigate to="/register" />} />
-        <Route path="/chat" element={user ? <Chat /> : <Navigate to="/register" />} />
+        <Route path="/Groups" element={user ? <Chat /> : <Navigate to="/register" />} />
       </Routes>
     </Router>
   );
