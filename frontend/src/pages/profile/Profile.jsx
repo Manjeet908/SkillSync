@@ -1,15 +1,13 @@
 import "./profile.css";
 import Topbar from "../../components/topbar/Topbar";
 import Sidebar from "../../components/sidebar/Sidebar";
-import Feed from "../../components/feed/Feed";
-import Rightbar from "../../components/FollowRequests/FollowRequests";
 import { useEffect, useState, useContext } from "react";
 import axiosInstance from "../../api/axios";
 import { useParams } from "react-router";
 import ProfileModal from "../profileModal/ProfileModal";
 import { Edit } from "@mui/icons-material";
 import { AuthContext } from "../../context/AuthContext";
-import SkillEditor from "../../components/skilleditor/SkillEditor";
+import SkillEditor from "../../components/skillEditor/SkillEditor";
 
 export default function Profile() {
   const PF = import.meta.env.VITE_APP_PUBLIC_FOLDER;
@@ -90,16 +88,12 @@ export default function Profile() {
             {currentUser.username === username && (
               <SkillEditor user={user} onUpdate={handleUserUpdate} />
             )}
-          </div>
-          <div className="profileStatus">
-            <p>
-              <strong>Looking for Jobs:</strong>{" "}
-              {user.wantToBeHired ? "Yes" : "No"}
-            </p>
-          </div>
-          <div className="profileRightBottom">
-            <Feed username={username} />
-            <Rightbar user={user} />
+            <div className="profileStatus">
+              <p>
+                <strong>Looking for Jobs:</strong>{" "}
+                {user.wantToBeHired ? "Yes" : "No"}
+              </p>
+            </div>
           </div>
         </div>
       </div>

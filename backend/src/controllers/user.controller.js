@@ -436,7 +436,7 @@ const removeFromKnownSkills = asyncHandler(async(req, res) => {
     if(!user)
         throw new ApiError(500, "Unable to fetch User Id")
     
-    const skillId = mapSkill(skill);
+    const skillId = skill?.id || mapSkill(skill);
     if(user.knownSkills.includes(skillId)) {
         user.knownSkills = user.knownSkills.filter(s => s !== skillId)
         await user.save({validateBeforeSave: false})
@@ -488,7 +488,7 @@ const removeFromInterestedSkills = asyncHandler(async(req, res) => {
     if(!user)
         throw new ApiError(500, "Unable to fetch User Id")
     
-    const skillId = mapSkill(skill);
+    const skillId = skill.id || mapSkill(skill);
     if(user.interestedSkills.includes(skillId)) {
         user.interestedSkills = user.interestedSkills.filter(s => s !== skillId)
         await user.save({validateBeforeSave: false})

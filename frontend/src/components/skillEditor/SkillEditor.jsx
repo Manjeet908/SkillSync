@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axiosInstance from "../../api/axios";
-import "./skillEditor.css";
+import "./skillEditor.css"
 
 export default function SkillEditor({ user, onUpdate }) {
   const [knownSkills, setKnownSkills] = useState(user.knownSkills || []);
@@ -10,20 +10,56 @@ export default function SkillEditor({ user, onUpdate }) {
   const [newKnownSkill, setNewKnownSkill] = useState("");
   const [newInterestedSkill, setNewInterestedSkill] = useState("");
 
-  const handleAddKnownSkill = () => {
+  useEffect(() => {
+    if (user.knownSkills) {
+      setKnownSkills(user.knownSkills);
+    }
+    if (user.interestedSkills) {
+      setInterestedSkills(user.interestedSkills);
+    }    
+  }, [user]);
+
+  const handleAddKnownSkill = async() => {
     if (newKnownSkill.trim() && !knownSkills.includes(newKnownSkill.trim())) {
       setKnownSkills([...knownSkills, newKnownSkill.trim()]);
       setNewKnownSkill("");
     }
+    try {
+      const res = await axiosInstance.patch(
+        `/users/add-known-skills`,
+        {
+          skill: newKnownSkill,
+        }
+      );
+      onUpdate(res.data.data);
+      alert("Skills updated successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update skills.");
+    }
+
   };
 
-  const handleRemoveKnownSkill = (index) => {
+  const handleRemoveKnownSkill = async(index) => {
+    try {
+      const res = await axiosInstance.patch(
+        `/users/remove-known-skills`,
+        {
+          skill: knownSkills[index],
+        }
+      );
+      onUpdate(res.data.data);
+      alert("Skills updated successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update skills.");
+    }
     const updatedSkills = [...knownSkills];
     updatedSkills.splice(index, 1);
     setKnownSkills(updatedSkills);
   };
 
-  const handleAddInterestedSkill = () => {
+  const handleAddInterestedSkill = async() => {
     if (
       newInterestedSkill.trim() &&
       !interestedSkills.includes(newInterestedSkill.trim())
@@ -31,21 +67,11 @@ export default function SkillEditor({ user, onUpdate }) {
       setInterestedSkills([...interestedSkills, newInterestedSkill.trim()]);
       setNewInterestedSkill("");
     }
-  };
-
-  const handleRemoveInterestedSkill = (index) => {
-    const updatedSkills = [...interestedSkills];
-    updatedSkills.splice(index, 1);
-    setInterestedSkills(updatedSkills);
-  };
-
-  const handleSaveSkills = async () => {
     try {
-      const res = await axiosInstance.put(
-        `/users/update-skills/${user.username}`,
+      const res = await axiosInstance.patch(
+        `/users/add-interested-skills`,
         {
-          knownSkills,
-          interestedSkills,
+          skill: newInterestedSkill,
         }
       );
       onUpdate(res.data.data);
@@ -56,13 +82,32 @@ export default function SkillEditor({ user, onUpdate }) {
     }
   };
 
+  const handleRemoveInterestedSkill = async(index) => {
+    try {
+      const res = await axiosInstance.patch(
+        `/users/remove-interested-skills`,
+        {
+          skill: interestedSkills[index],
+        }
+      );
+      onUpdate(res.data.data);
+      alert("Skills updated successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update skills.");
+    }
+    const updatedSkills = [...interestedSkills];
+    updatedSkills.splice(index, 1);
+    setInterestedSkills(updatedSkills);
+  };
+
   return (
     <div className="profileSkills">
       <h3>Known Skills</h3>
       <div className="skillList">
         {knownSkills.map((skill, index) => (
           <div key={index} className="skillItem">
-            {skill}
+            {skill.name}
             <button onClick={() => handleRemoveKnownSkill(index)}>✖</button>
           </div>
         ))}
@@ -81,7 +126,7 @@ export default function SkillEditor({ user, onUpdate }) {
       <div className="skillList">
         {interestedSkills.map((skill, index) => (
           <div key={index} className="skillItem">
-            {skill}
+            {typeof skill === 'string' ? skill : skill.name}
             <button onClick={() => handleRemoveInterestedSkill(index)}>✖</button>
           </div>
         ))}
@@ -95,10 +140,6 @@ export default function SkillEditor({ user, onUpdate }) {
         />
         <button onClick={handleAddInterestedSkill}>Add</button>
       </div>
-
-      <button className="saveSkillsBtn" onClick={handleSaveSkills}>
-        Save Changes
-      </button>
     </div>
   );
 }
