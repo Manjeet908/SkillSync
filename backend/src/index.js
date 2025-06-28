@@ -7,6 +7,7 @@ import { User } from './models/user.model.js'
 import { ApiError } from './utils/ApiError.js';
 import jwt from 'jsonwebtoken'
 import cookie from 'cookie'
+import { log } from 'console';
 
 const httpServer = createServer(app)
 
@@ -65,6 +66,11 @@ io.on('connection', (socket) => {
             socket.emit('error', error.message)
         }
     })
+
+    socket.on("send_message", (data) => {
+        log('Message received:', data)
+        io.emit("receive_message", data);
+    });
 
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id)

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import './chat.css';
-import io from "socket.io-client";
-
-const socket = io("http://localhost:8000"); // Backend port
+import "./chat.css";
+import { useSocket } from "../../context/SocketContext";
 
 export default function Chat() {
+  const socket = useSocket();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
 
@@ -17,12 +16,14 @@ export default function Chat() {
 
   useEffect(() => {
     // When a message is received, add it to the chat
-    socket.on("receive_message", data => {
-      setMessages(prev => [...prev, data]);
-    });
+    if (socket) {
+      socket.on("receive_message", (data) => {
+        setMessages((prev) => [...prev, data]);
+      });
 
-    // Cleanup listener when component unmounts
-    return () => socket.off("receive_message");
+      // Cleanup listener when component unmounts
+      return () => socket.off("receive_message");
+    }
   }, []);
 
   return (
@@ -30,14 +31,16 @@ export default function Chat() {
       <h2 className="chat-title">🌐 Global Chat</h2>
       <div className="messages-container">
         {messages.map((m, i) => (
-          <div key={i} className="message">{m.text}</div>
+          <div key={i} className="message">
+            {m.text}
+          </div>
         ))}
       </div>
       <div className="input-container">
         <input
           className="message-input"
           value={message}
-          onChange={e => setMessage(e.target.value)}
+          onChange={(e) => setMessage(e.target.value)}
           placeholder="Type your message..."
         />
         <button className="send-button" onClick={sendMessage}>
