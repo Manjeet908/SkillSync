@@ -9,6 +9,7 @@ import { useParams } from "react-router";
 import ProfileModal from "../profileModal/ProfileModal";
 import { Edit } from "@mui/icons-material";
 import { AuthContext } from "../../context/AuthContext";
+import SkillEditor from "../../components/skilleditor/SkillEditor";
 
 export default function Profile() {
   const PF = import.meta.env.VITE_APP_PUBLIC_FOLDER;
@@ -20,16 +21,22 @@ export default function Profile() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const res = await axiosInstance.get(
-        `/users/get-user-profile/${username}`
-      );
-      setUser(res.data.data);
+      try {
+        const res = await axiosInstance.get(
+          `/users/get-user-profile/${username}`
+        );
+        setUser(res.data.data);
+      } catch (err) {
+        console.error("Failed to fetch user:", err);
+      }
     };
     fetchUser();
   }, [username]);
 
-  // console.log("hi", currentUser)
-  // console.log("hi2", user)
+  const handleUserUpdate = (updatedData) => {
+    setUser(updatedData);
+  };
+
   return (
     <>
       <Topbar />
@@ -57,6 +64,7 @@ export default function Profile() {
                   Edit Cover Photo
                 </button>
               )}
+
               <img
                 className="profileUserImg"
                 src={user.avatar ? user.avatar : PF + "assets/person/1.jpg"}
@@ -68,17 +76,34 @@ export default function Profile() {
               />
             </div>
             <div className="profileInfo">
-              <h4 className="profileInfoName">{user.username}</h4>
-              <span className="profileInfoDesc">{user.bio}</span>
+              <h4 className="profileInfoName">
+                {user.fullName || user.username}
+              </h4>
+              <p className="profileUsername">@{user.username}</p>
+              <p className="profileEmail">{user.email}</p>
+              <p className="profileInfoDesc">
+                {user.bio || "No bio provided."}
+              </p>
             </div>
+
+            {/* Render SkillEditor only if the profile belongs to the current user */}
+            {currentUser.username === username && (
+              <SkillEditor user={user} onUpdate={handleUserUpdate} />
+            )}
+          </div>
+          <div className="profileStatus">
+            <p>
+              <strong>Looking for Jobs:</strong>{" "}
+              {user.wantToBeHired ? "Yes" : "No"}
+            </p>
           </div>
           <div className="profileRightBottom">
-            {/* why feed? */}
             <Feed username={username} />
             <Rightbar user={user} />
           </div>
         </div>
       </div>
+
       {isAvatarModalOpen && (
         <ProfileModal onClose={() => setIsAvatarModalOpen(false)} user={user} />
       )}

@@ -7,17 +7,16 @@
 .profileRight {
     flex: 9;
 }
+
 .profileRightTop {
     position: sticky;
     top: 0;
     z-index: 100;
     background-color: white;
     padding: 20px 0;
-    /* Add background to prevent content showing through */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
-    /* Optional: adds subtle shadow */
 }
+
 .profileCover {
     height: 320px;
     position: relative;
@@ -81,7 +80,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-top: 20px;
+    margin-top: 60px;
+    padding: 0 20px;
 }
 
 .profileInfoName {
@@ -90,10 +90,59 @@
     margin: 0;
 }
 
+.profileUsername,
+.profileEmail,
 .profileInfoDesc {
     font-weight: 300;
-    color: #666;
-    margin-top: 5px;
+    color: #555;
+    margin: 5px 0;
+    text-align: center;
+    word-break: break-word;
+}
+
+.profileSkills {
+    width: 100%;
+    max-width: 600px;
+    margin-top: 20px;
+    text-align: left;
+}
+
+.profileSkills h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #333;
+}
+
+.profileSkills ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex; /* Use Flexbox */
+    flex-wrap: wrap; /* Allow items to wrap to the next line */
+    gap: 10px; /* Add some spacing between items */
+}
+
+.profileSkills li {
+    margin-bottom: 6px;
+    color: #444;
+    background-color: #f0f0f0; /* Add a background color */
+    padding: 5px 10px; /* Add some padding */
+    border-radius: 20px; /* Make it rounded */
+}
+
+.profileStatus,
+.profileTimestamps {
+    width: 100%;
+    max-width: 600px;
+    margin-top: 20px;
+    color: #333;
+}
+
+.profileStatus p,
+.profileTimestamps p {
+    margin: 4px 0;
+    font-size: 14px;
 }
 
 .profileRightBottom {
