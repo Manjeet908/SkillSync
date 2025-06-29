@@ -1,0 +1,30 @@
+.skill-groups-menu {
+    cursor: pointer;
+}
+
+.menu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    font-weight: bold;
+}
+
+.skills-sections {
+    margin-left: 15px;
+}
+
+.skills-section h4 {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.skill-item {
+    padding: 5px 0;
+    cursor: pointer;
+    color: #007bff;
+}
+
+.skill-item:hover {
+    text-decoration: underline;
+}
