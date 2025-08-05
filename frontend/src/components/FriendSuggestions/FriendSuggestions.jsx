@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../api/axios";
-import "./friendSuggestions.css";
+import "./FriendSuggestions.css";
 function FriendSuggestions() {
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(true);
