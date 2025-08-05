@@ -13,7 +13,7 @@ app.use(express.json({limit: "16kb"}))
 app.use(express.urlencoded({extended: true, limit: "16kb"}))
 app.use(express.static("public"))
 app.use(cookieParser())
-app.use("/api/v1/chats",chatRouter);
+app.use("/chats",chatRouter);
 
 // routes
 import userRouter from "./routes/user.routes.js"
@@ -25,13 +25,13 @@ import notificationRouter from "./routes/notification.routes.js"
 import searchRouter from "./routes/search.routes.js"
 import skillRouter from "./routes/skill.routes.js"
 
-app.use("/api/v1/users", userRouter)
-app.use("/api/v1/follow", followRouter)
-app.use("/api/v1/posts", postRouter) 
-app.use("/api/v1/likes", likeRouter)
-app.use("/api/v1/comments", commentRouter)
-app.use("/api/v1/notify", notificationRouter)
-app.use("/api/v1/search", searchRouter)
-app.use("/api/v1/skills", skillRouter)
+app.use("/users", userRouter)
+app.use("/follow", followRouter)
+app.use("/posts", postRouter) 
+app.use("/likes", likeRouter)
+app.use("/comments", commentRouter)
+app.use("/notify", notificationRouter)
+app.use("/search", searchRouter)
+app.use("/skills", skillRouter)
 
 export default app
