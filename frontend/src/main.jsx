@@ -6,11 +6,11 @@ import { SocketProvider } from "./context/SocketContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <AuthContextProvider>
       <SocketProvider>
         <App />
       </SocketProvider>
     </AuthContextProvider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );
