@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axiosInstance from "../../api/axios";
+import UserCard from "../UserCard/UserCard";
 import "./FriendSuggestions.css";
 function FriendSuggestions() {
   const [suggestions, setSuggestions] = useState([]);
@@ -29,24 +30,11 @@ function FriendSuggestions() {
     <div className="suggestions-container">
       <h2 className="suggestions-title">Friend Suggestions</h2>
       {suggestions.map((user) => (
-        <div className="suggestion-item" key={user._id}>
-          <div className="suggestion-user">
-            <img
-              src={user.avatar}
-              alt={user.username}
-              className="suggestion-avatar"
-            />
-            <span>{user.username}</span>
-            <div>
-              <button
-                onClick={() => handleFollow(user.username)}
-                className="btn-follow"
-              >
-                Connect
-              </button>
-            </div>
-          </div>
-        </div>
+        <UserCard
+          key={user._id}
+          user={user}
+          initialIsFollowing={false}
+        />
       ))}
     </div>
   );

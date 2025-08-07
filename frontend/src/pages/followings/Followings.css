@@ -1,0 +1,33 @@
+.followingsContainer {
+  display: flex;
+  width: 100%;
+}
+
+.followingsFeed {
+  flex: 6;
+  padding: 20px;
+  background: #fff;
+  min-height: 100vh;
+}
+
+.followingsList {
+  list-style: none;
+  padding: 0;
+}
+
+.followingItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #f7f7f7;
+}
+
+.followingAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 12px;
+}

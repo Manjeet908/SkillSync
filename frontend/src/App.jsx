@@ -10,6 +10,7 @@ import YourPost from "./pages/yourPosts/YourPosts";
 import LikedPost from "./pages/like/Like";
 import Chat from "./pages/chat/Chat";
 import Explore from "./pages/explore/Explore";
+import Followings from "./pages/followings/Followings";
 
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
         <Route path="/liked-posts" element={user ? <LikedPost /> : <Navigate to="/register" />} />
         <Route path="/chat" element={user ? <Chat /> : <Navigate to="/register" />} />
         <Route path="/explore" element={user ? <Explore /> : <Navigate to="/register" />} />
+        <Route path="/followings" element={user ? <Followings /> : <Navigate to="/register" />} />
       </Routes>
     </Router>
   );
