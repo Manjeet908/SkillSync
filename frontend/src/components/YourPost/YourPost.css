@@ -1,12 +1,14 @@
+.your-posts-container > * {
+    display: block;
+    width: 100%;
+}
 .your-posts-container {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
+    flex: 5;
 }
 
 .your-posts-title {
     font-size: 24px;
-    margin-bottom: 20px;
+    margin: 20px;
     color: #333;
 }
 

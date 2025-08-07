@@ -41,7 +41,7 @@ function LikedPost() {
             <h2 className="liked-posts-title">Liked Posts</h2>
             {
                 posts.length === 0 ? (
-                    <p className="no-posts-message">You haven't posted anything yet.</p>
+                    <p className="no-posts-message">You haven't Liked anything yet.</p>
                 ) : (
                     posts.map((post)=>(
                         <Post post={post} key={post._id}/>

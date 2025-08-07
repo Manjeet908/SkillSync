@@ -6,8 +6,8 @@ import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
 import Profile from "./pages/profile/Profile";
 import Register from "./pages/register/Register";
-import YourPost from "./components/YourPost/YourPost";
-import LikedPost from "./components/LikedPost/LikedPost";
+import YourPost from "./pages/yourPosts/YourPosts";
+import LikedPost from "./pages/like/Like";
 import Chat from "./pages/chat/Chat";
 import Explore from "./pages/explore/Explore";
 

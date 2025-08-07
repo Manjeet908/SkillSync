@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './Explore.css';
 import axiosInstance from '../../api/axios';
+import Topbar from "../../components/topbar/Topbar";
+import Sidebar from "../../components/sidebar/Sidebar";
+import Rightbar from "../../components/rightbar/Rightbar";
 
 function Explore() {
   const [skills, setSkills] = useState([]);
@@ -20,15 +23,15 @@ function Explore() {
   const handleFollow = async (skill) => {
     try {
       if(skill.isFollowed) {
-        const res = await axiosInstance.post(`/users/remove-interested-skill/${skill.name}`);
+        const res = await axiosInstance.patch(`/users/remove-interested-skills`, { skill: skill.name });
       }
       else {
-        const res = await axiosInstance.post(`/users/add-interested-skill${skill.name}`)
+        const res = await axiosInstance.patch(`/users/add-interested-skills`, { skill: skill.name });
       }
 
       setSkills(prev =>
-        prev.map(skill =>
-          skill._id === id ? { ...skill, isFollowed: !skill.isFollowed } : skill
+        prev.map(prevSkill =>
+          skill.id === prevSkill.id ? { ...prevSkill, isFollowed: !prevSkill.isFollowed } : prevSkill
         )
       );
     } catch (err) {
@@ -37,21 +40,28 @@ function Explore() {
   };
 
   return (
-    <div className='explore'>
-      <h1>Explore New Skills</h1>
-      <div className='skill-grid'>
-        {skills.map((skill) => (
-          <div className='skill-card' key={skill.id}>
-            <img src={skill.image} alt={skill.name} />
-            <h3>{skill.name}</h3>
-            <p>{skill.description}</p>
-            <button onClick={() => handleFollow(skill)}>
-              {skill.isFollowed ? "Unfollow" : "Follow"}
-            </button>
+    <>
+      <Topbar />
+      <div className="explore-container">
+        <Sidebar />
+        <div className='explore'>
+          <h1>Explore New Skills</h1>
+          <div className='skill-grid'>
+            {skills.map((skill) => (
+              <div className='skill-card' key={skill.id}>
+                <img src={skill.image} alt={skill.name} />
+                <h3>{skill.name}</h3>
+                <p>{skill.description}</p>
+                <button onClick={() => handleFollow(skill)}>
+                  {skill.isFollowed ? "Unfollow" : "Follow"}
+                </button>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
+        <Rightbar />
       </div>
-    </div>
+    </>
   );
 }
 
