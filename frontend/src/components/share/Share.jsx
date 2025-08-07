@@ -1,33 +1,47 @@
 import "./share.css";
 import {
   PermMedia,
-  Label,
-  Room,
-  EmojiEmotions,
   Cancel,
 } from "@mui/icons-material";
-import { useContext, useRef, useState } from "react";
+import { useContext, useRef, useState, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import axiosInstance from "../../api/axios";
 
 export default function Share() {
   const { user } = useContext(AuthContext);
-  const PF = import.meta.env.VITE_APP_PUBLIC_FOLDER;
-  const desc = useRef();
+  const titleRef = useRef();
+  const descRef = useRef();
   const [file, setFile] = useState(null);
+  const [skill, setSkill] = useState("");
+  const [isPublic, setIsPublic] = useState(true);
+  const [skillsList, setSkillsList] = useState([]);
+
+  useEffect(() => {
+    const fetchSkills = async () => {
+      try {
+        const res = await axiosInstance.get("/skills/explore");
+        const skillsArr = res.data.data || [];
+        setSkillsList(skillsArr);
+        if (skillsArr.length > 0) setSkill(skillsArr[0].name);
+      } catch (err) {
+        setSkillsList([{ id: 0, name: "Other" }]);
+        setSkill("Other");
+      }
+    };
+    fetchSkills();
+  }, []);
 
   const submitHandler = async (e) => {
     e.preventDefault();
     const newPost = new FormData();
-    newPost.append("title", desc.current.value);
-    newPost.append("description", desc.current.value); 
-    newPost.append("category", "other");
-
+    newPost.append("title", titleRef.current.value);
+    newPost.append("description", descRef.current.value);
+    newPost.append("skillShowcasing", skill);
+    newPost.append("isPublic", isPublic);
+    if (file) {
+      newPost.append("media", file);
+    }
     try {
-      if (file) {
-        newPost.append("media", file);
-      }
-      
       await axiosInstance.post("/posts/create-post", newPost, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -45,22 +59,54 @@ export default function Share() {
         <div className="shareTop">
           <img
             className="shareProfileImg"
-            src={
-              user.avatar ? user.avatar : PF + "person/noAvatar.png"
-            }
+            src={user.avatar ? user.avatar : PF + "person/noAvatar.png"}
             alt=""
           />
           <input
-            placeholder={"What's in your mind " + user.username + "?"}
+            placeholder={"Title (required)"}
             className="shareInput"
-            ref={desc}
+            ref={titleRef}
+            maxLength={150}
+            required
           />
+        </div>
+        <div style={{ margin: "10px 0" }}>
+          <textarea
+            placeholder="Description"
+            className="shareInput"
+            ref={descRef}
+            rows={2}
+            style={{ width: "100%", resize: "vertical" }}
+          />
+        </div>
+
+        <div style={{ margin: "10px 0" }}>
+          <label>Skill Showcasing: </label>
+          <select value={skill} onChange={e => setSkill(e.target.value)}>
+            {skillsList.map(skillObj => (
+              <option key={skillObj.id} value={skillObj.name}>{skillObj.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div style={{ margin: "20px 0" }}>
+          <label>
+            <input type="checkbox" checked={isPublic} onChange={e => setIsPublic(e.target.checked)} />
+            Public
+          </label>
         </div>
         <hr className="shareHr" />
         {file && (
           <div className="shareImgContainer">
-            <img className="shareImg" src={URL.createObjectURL(file)} alt="" />
-            <Cancel className="shareCancelImg" onClick={() => setFile(null)} />
+            {file.type.startsWith("image/") ? (
+              <img className="shareImg" src={URL.createObjectURL(file)} alt="preview" />
+            ) : file.type.startsWith("video/") ? (
+              <video className="shareImg" src={URL.createObjectURL(file)} controls />
+            ) : null}
+            <div style={{ display: "flex", alignItems: "center", marginTop: "5px" }}>
+              <span>{file.name}</span>
+              <Cancel className="shareCancelImg" style={{ marginLeft: "8px" }} onClick={() => setFile(null)} />
+            </div>
           </div>
         )}
         <form className="shareBottom" onSubmit={submitHandler}>
@@ -76,10 +122,7 @@ export default function Share() {
                 onChange={(e) => setFile(e.target.files[0])}
               />
             </label>
-            <div className="shareOption">
-              <Label htmlColor="blue" className="shareIcon" />
-              <span className="shareOptionText">Tag</span>
-            </div>
+            {/* Removed Tag icon and option */}
           </div>
           <button className="shareButton" type="submit">
             Share

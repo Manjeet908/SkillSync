@@ -1,29 +1,28 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
+import { Delete } from "@mui/icons-material";
 import "./comment.css";
-import axiosInstance from "../../api/axios"; // Your Axios config with baseURL & auth
+import axiosInstance from "../../api/axios";
 
 function Comment({ postId, currentUser }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [commentType, setCommentType] = useState("general");
   const commentEndRef = useRef(null);
 
-  // Fetch comments for the post
   useEffect(() => {
     const fetchComments = async () => {
       try {
         const res = await axiosInstance.get(`/comments/${postId}`, {
           params: {
             page: 1,
-            limit: 10,
+            limit: 50,
           },
         });
-        // console.log(res.data.data)
-        setComments(res.data.data.docs || []); // response format from your backend
+        setComments(res.data.data.docs || []);
       } catch (err) {
         console.error("Error fetching comments:", err);
       }
     };
-
     fetchComments();
   }, [postId]);
 
@@ -31,17 +30,14 @@ function Comment({ postId, currentUser }) {
     commentEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Submit a new comment
   const handleCommentSubmit = async () => {
     if (!newComment.trim()) return;
-
     try {
       const res = await axiosInstance.post(`/comments/new/${postId}`, {
         content: newComment,
-        type: "normal", // or "feedback" if needed
+        type: commentType,
       });
-      console.log(res.data.data)
-      setComments((prev) => [...prev, res.data.data]); // assuming new comment is returned as res.data.data
+      setComments((prev) => [...prev, res.data.data]);
       setNewComment("");
       scrollToBottom();
     } catch (err) {
@@ -49,7 +45,6 @@ function Comment({ postId, currentUser }) {
     }
   };
 
-  // Delete a comment
   const handleDelete = async (commentId) => {
     try {
       await axiosInstance.delete(`/comments/delete/${commentId}`);
@@ -59,38 +54,60 @@ function Comment({ postId, currentUser }) {
     }
   };
 
+  // Separate comments by type
+  const generalComments = comments.filter((c) => c.type === "general" || c.type === "normal");
+  const feedbackComments = comments.filter((c) => c.type === "feedback");
+
   return (
     <div className="comments-container">
-      <div className="comments-list">
-        {comments.map((c) => (
-          <div key={c._id} className="comment-item">
-            <div>
-              <strong>{c.author?.username || "Unknown"}</strong> {c.content}
-              <span className="comment-time">
-                • {new Date(c.createdAt).toLocaleString()}
-              </span>
-            </div>
-            {c.author?._id === currentUser._id && (
-              <button
-                className="delete-btn"
-                onClick={() => handleDelete(c._id)}
-              >
-                Delete
-              </button>
-            )}
-          </div>
-        ))}
-        <div ref={commentEndRef} />
-      </div>
-
       <div className="comment-input-area">
+        <select value={commentType} onChange={e => setCommentType(e.target.value)} className="comment-type-select">
+          <option value="general">General</option>
+          <option value="feedback">Feedback</option>
+        </select>
         <input
           type="text"
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Add a comment..."
         />
-        <button onClick={handleCommentSubmit}>Post</button>
+        <button className="comment-post-btn" onClick={handleCommentSubmit}>Post</button>
+      </div>
+
+      <div className="comments-columns">
+        <div className="comments-list general-comments">
+          <h3>General Comments</h3>
+          {generalComments.map((c) => (
+            <div key={c._id} className="comment-item">
+              <div className="comment-content">
+                <span className="comment-author">{c.author?.username || "Unknown"}</span>
+                <span className="comment-text">{c.content}</span>
+              </div>
+              {c.author?._id === currentUser._id && (
+                <button className="delete-btn" onClick={() => handleDelete(c._id)} title="Delete">
+                  <Delete style={{ fontSize: 20 }} />
+                </button>
+              )}
+            </div>
+          ))}
+          <div ref={commentEndRef} />
+        </div>
+        <div className="comments-list feedback-comments">
+          <h3>Feedback Comments</h3>
+          {feedbackComments.map((c) => (
+            <div key={c._id} className="comment-item">
+              <div className="comment-content">
+                <span className="comment-author">{c.author?.username || "Unknown"}</span>
+                <span className="comment-text">{c.content}</span>
+              </div>
+              {c.author?._id === currentUser._id && (
+                <button className="delete-btn" onClick={() => handleDelete(c._id)} title="Delete">
+                  <Delete style={{ fontSize: 20 }} />
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

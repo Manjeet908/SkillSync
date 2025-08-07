@@ -4,13 +4,12 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import { useEffect, useState, useContext } from "react";
 import axiosInstance from "../../api/axios";
 import { useParams } from "react-router";
-import ProfileModal from "../profileModal/ProfileModal";
+import ProfileModal from "../../components/profileModal/ProfileModal";
 import { Edit } from "@mui/icons-material";
 import { AuthContext } from "../../context/AuthContext";
 import SkillEditor from "../../components/skillEditor/SkillEditor";
 
 export default function Profile() {
-  const PF = import.meta.env.VITE_APP_PUBLIC_FOLDER;
   const [user, setUser] = useState({});
   const { user: currentUser } = useContext(AuthContext);
   const username = useParams().username;
@@ -88,12 +87,12 @@ export default function Profile() {
             {currentUser.username === username && (
               <SkillEditor user={user} onUpdate={handleUserUpdate} />
             )}
-            <div className="profileStatus">
+            {/* <div className="profileStatus">
               <p>
                 <strong>Looking for Jobs:</strong>{" "}
                 {user.wantToBeHired ? "Yes" : "No"}
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
