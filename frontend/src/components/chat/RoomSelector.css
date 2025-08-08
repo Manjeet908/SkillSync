@@ -199,15 +199,46 @@
     background: #a8a8a8;
 }
 
+/* Room sections */
+.room-section {
+    margin-bottom: 8px;
+}
+
+.room-section-header {
+    padding: 8px 16px 4px;
+    margin-top: 12px;
+}
+
+.section-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #657786;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.room-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e1e8ed;
+}
+
+.last-message {
+    font-style: italic;
+    color: #657786;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     .room-selector {
         min-width: 100%;
         max-width: 100%;
         border-right: none;
-        border-bottom: 1px solid #e1e8ed;
-        height: auto;
-        max-height: 200px;
+        border-bottom: none;
+        height: 100%;
+        max-height: none;
     }
     
     .room-selector-header {
@@ -219,7 +250,9 @@
     }
     
     .room-list {
-        max-height: 150px;
+        max-height: none;
+        height: auto;
+        padding-bottom: 20px;
     }
     
     .room-item {
@@ -280,5 +313,17 @@
     
     .room-emoji {
         background: #192734;
+    }
+    
+    .section-title {
+        color: #8899a6;
+    }
+    
+    .room-avatar {
+        border-color: #38444d;
+    }
+    
+    .last-message {
+        color: #8899a6;
     }
 }

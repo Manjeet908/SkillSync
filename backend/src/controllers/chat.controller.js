@@ -137,10 +137,82 @@ export const sendSkillMessage = asyncHandler(async (req, res) => {
   ));
 });
 
-// Get all available chat rooms (global + all skills)
+// Get all available chat rooms (global + skills + private conversations)
 export const getChatRooms = asyncHandler(async (req, res) => {
   const { getSkillsDocument } = await import("../utils/skills.js");
   const skills = getSkillsDocument();
+  const currentUserId = req.user._id;
+
+  // Get user's private conversations
+  const conversations = await Chat.aggregate([
+    {
+      $match: {
+        chatType: 'private',
+        $or: [
+          { sender: currentUserId },
+          { recipient: currentUserId }
+        ]
+      }
+    },
+    {
+      $sort: { timestamp: -1 }
+    },
+    {
+      $group: {
+        _id: '$conversationId',
+        lastMessage: { $first: '$$ROOT' },
+        messageCount: { $sum: 1 }
+      }
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'lastMessage.sender',
+        foreignField: '_id',
+        as: 'senderInfo'
+      }
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'lastMessage.recipient',
+        foreignField: '_id',
+        as: 'recipientInfo'
+      }
+    },
+    {
+      $addFields: {
+        otherUser: {
+          $cond: [
+            { $eq: ['$lastMessage.sender', currentUserId] },
+            { $arrayElemAt: ['$recipientInfo', 0] },
+            { $arrayElemAt: ['$senderInfo', 0] }
+          ]
+        }
+      }
+    },
+    {
+      $project: {
+        conversationId: '$_id',
+        lastMessage: {
+          message: '$lastMessage.message',
+          timestamp: '$lastMessage.timestamp',
+          isEdited: '$lastMessage.isEdited',
+          sender: '$lastMessage.sender'
+        },
+        otherUser: {
+          _id: '$otherUser._id',
+          username: '$otherUser.username',
+          fullName: '$otherUser.fullName',
+          avatar: '$otherUser.avatar'
+        },
+        messageCount: 1
+      }
+    },
+    {
+      $sort: { 'lastMessage.timestamp': -1 }
+    }
+  ]);
 
   const chatRooms = [
     {
@@ -157,6 +229,18 @@ export const getChatRooms = asyncHandler(async (req, res) => {
       type: 'skill',
       skillId: skill.id,
       image: skill.image
+    })),
+    ...conversations.map(conv => ({
+      id: `private-${conv.otherUser._id}`,
+      name: conv.otherUser.fullName || conv.otherUser.username,
+      description: `Private chat with ${conv.otherUser.username}`,
+      type: 'private',
+      userId: conv.otherUser._id,
+      username: conv.otherUser.username,
+      avatar: conv.otherUser.avatar,
+      conversationId: conv.conversationId,
+      lastMessage: conv.lastMessage,
+      messageCount: conv.messageCount
     }))
   ];
 

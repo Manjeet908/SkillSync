@@ -9,7 +9,7 @@ export const useChat = () => {
     return useContext(ChatContext);
 };
 
-export const ChatProvider = ({ children }) => {
+export const ChatProvider = ({ children, privateChatUser = null }) => {
     const socket = useSocket();
     const { user } = useContext(AuthContext);
     
@@ -90,6 +90,12 @@ export const ChatProvider = ({ children }) => {
             // Send via REST API - backend will handle socket emissions
             const response = await axiosInstance.post(endpoint, { message: messageText });
             
+            // If it's a new private conversation, refresh the chat rooms
+            if (currentRoom.type === 'private' && !chatRooms.find(room => 
+                room.type === 'private' && room.userId === currentRoom.id)) {
+                fetchChatRooms();
+            }
+            
             // Note: Don't add to local state here - let socket listener handle it
             // This prevents duplicates and ensures all clients see messages in sync
             
@@ -154,7 +160,7 @@ export const ChatProvider = ({ children }) => {
         fetchMessages(roomType, roomId);
     };
 
-    // Socket event listeners
+    // Socket event listeners for message reception and typing indicators
     useEffect(() => {
         if (!socket) return;
 
@@ -252,6 +258,14 @@ export const ChatProvider = ({ children }) => {
             fetchMessages('global'); // Start with global chat
         }
     }, [user]);
+
+    // Handle private chat initialization
+    useEffect(() => {
+        if (privateChatUser && user) {
+            // Switch to private chat with the specified user
+            switchRoom('private', privateChatUser.id, `Chat with ${privateChatUser.username}`);
+        }
+    }, [privateChatUser, user]);
 
     // Scroll to bottom when messages change
     useEffect(() => {

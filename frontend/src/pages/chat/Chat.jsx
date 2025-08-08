@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { ChatProvider } from '../../context/ChatContext';
 import RoomSelector from '../../components/chat/RoomSelector';
 import MessageList from '../../components/chat/MessageList';
@@ -8,13 +9,25 @@ import './Chat.css';
 
 const ChatPage = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [searchParams] = useSearchParams();
+    const [privateChatUser, setPrivateChatUser] = useState(null);
+
+    // Check for URL parameters to auto-open private chat
+    useEffect(() => {
+        const userId = searchParams.get('userId');
+        const username = searchParams.get('username');
+        
+        if (userId && username) {
+            setPrivateChatUser({ id: userId, username });
+        }
+    }, [searchParams]);
 
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
     };
 
     return (
-        <ChatProvider>
+        <ChatProvider privateChatUser={privateChatUser}>
             <div className="chat-page">
                 <Topbar />
                 
