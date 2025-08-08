@@ -16,7 +16,7 @@ export const SocketProvider = ({ children }) => {
         let socketInstance = null;
 
         if (user) {
-            socketInstance = io(import.meta.env.VITE_API_URL || 'http://localhost:8000', {
+            socketInstance = io(import.meta.env.VITE_APP_API_URL || 'http://localhost:8000', {
                 withCredentials: true,
             });
 
