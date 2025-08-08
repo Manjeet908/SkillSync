@@ -171,6 +171,8 @@ const getAllPosts = asyncHandler(async (req, res) => {
                 $project: {
                     "creator.password": 0,
                     "creator.email": 0,
+                    "creator.refreshToken": 0,
+                    "creator.location": 0,
                     "likes": 0
                 }
             },

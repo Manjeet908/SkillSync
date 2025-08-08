@@ -1,3 +1,63 @@
+.postTopLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.postTopRight {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.postSkillName {
+  font-weight: bold;
+  color: #1976d2;
+}
+
+.postMenu {
+  position: relative;
+}
+
+.postDropdownMenu {
+  position: absolute;
+  right: 0;
+  top: 2rem;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  z-index: 10;
+}
+
+.menuItem {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: none;
+  text-align: left;
+}
+
+.deleteMenuItem {
+  color: red;
+}
+
+.postTitle {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin: 0.5rem 0;
+}
+
+.postCommentIconActive {
+  color: #222;
+  font-size: 24px !important;
+}
+
+.postCommentIconInactive {
+  color: #1976d2;
+  font-size: 24px !important;
+}
 .post {
     width: 100%;
     border-radius: 10px;
@@ -127,4 +187,36 @@
 
 .deleteIcon:hover {
     color: #cc0000;
+}
+
+.postDropdownMenu {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.postMenu .postDropdownMenu {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+.menuItem {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 15px;
+}
+.menuItem:focus, .menuItem:hover {
+  background: #f0f0f0;
+}
+.deleteMenuItem {
+  color: #d32f2f;
 }

@@ -3,14 +3,13 @@ import {
   MoreVert,
   Favorite,
   FavoriteBorder,
-  Delete,
   ChatBubbleOutline,
   ChatBubble,
 } from "@mui/icons-material";
 import { useContext, useEffect, useState } from "react";
 import axiosInstance from "../../api/axios";
 import * as timeago from "timeago.js";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import Comment from "../comment/Comment";
 
@@ -19,11 +18,13 @@ export default function Post({ post }) {
   const [isLiked, setIsLiked] = useState(post.isLiked || false);
   const [creator, setCreator] = useState(post.creator);
   const [showComments, setShowComments] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(post.isFollowing || false); // dummy
   const [showMenu, setShowMenu] = useState(false); // for three dots menu
-
+  
   const { user: currentUser } = useContext(AuthContext);
+  const { dispatch } = useContext(AuthContext);
+  const navigate = useNavigate();
   const isOwnProfile = post.creator?._id === currentUser._id;
+  const PF = import.meta.env.VITE_APP_PUBLIC_FOLDER;
 
   useEffect(() => {
     setIsLiked(post.isLiked || false);
@@ -56,19 +57,43 @@ export default function Post({ post }) {
     return url.match(/\.(mp4|webm|ogg)$/i);
   };
 
-  // Dummy follow/unfollow handler
-  const followHandler = () => {
-    setIsFollowing((prev) => !prev);
+
+  // Interested skill handler
+  const skillObj = post.skillShowcasing;
+  const skillId = skillObj?.id || skillObj?._id;
+  const isSkillInterested = currentUser?.interestedSkills?.some(s => s.id === skillId);
+
+  const handleInterestedSkill = async () => {
+    if (!skillId) return;
+    try {
+      if (!isSkillInterested) {
+        await axiosInstance.patch("/users/add-interested-skills", { skill: skillObj.name });
+        dispatch({
+          type: "LOGIN_SUCCESS",
+          payload: {
+            ...currentUser,
+            interestedSkills: [...currentUser.interestedSkills, skillObj],
+          },
+        });
+      } else {
+        await axiosInstance.patch("/users/remove-interested-skills", { skill: skillObj.name });
+        dispatch({
+          type: "LOGIN_SUCCESS",
+          payload: {
+            ...currentUser,
+            interestedSkills: currentUser.interestedSkills.filter((s) => s.id !== skillId),
+          },
+        });
+      }
+    } catch (err) {
+      alert("Failed to update interested skills");
+      console.log(err);
+    }
   };
 
-  // Dummy interested skill handler
-  const addToInterestedSkills = () => {
-    alert("Added to interested skills (dummy)");
-  };
-
-  // Dummy chat handler
+  // Chat with creator handler
   const chatWithCreator = () => {
-    alert("Chat with creator (dummy)");
+    navigate(`/chat?userId=${creator._id}&username=${creator.username}`);
   };
 
   return (
@@ -76,7 +101,7 @@ export default function Post({ post }) {
       <div className="postWrapper">
         {/* Top Section */}
         <div className="postTop">
-          <div className="postTopLeft" style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          <div className="postTopLeft">
             <Link to={`/profile/${creator.username}`}>
               <img
                 className="postProfileImg"
@@ -85,33 +110,28 @@ export default function Post({ post }) {
               />
             </Link>
             <span className="postUsername">{creator.username}</span>
-            <button
-              className="followBtn"
-              onClick={followHandler}
-              style={{ marginLeft: "0.5rem" }}
-              disabled={isOwnProfile}
-            >
-              {isOwnProfile ? "You" : isFollowing ? "Unfollow" : "Follow"}
-            </button>
+            
             <span className="postDate">{timeago.format(post.createdAt)}</span>
           </div>
-          <div className="postTopRight" style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          <div className="postTopRight">
             {/* Skill name */}
-            <span className="postSkillName" style={{ fontWeight: "bold", color: "#1976d2" }}>
+            <span className="postSkillName">
               {post.skillShowcasing?.name || "Skill"}
             </span>
             {/* Three dots menu */}
-            <div className="postMenu" style={{ position: "relative" }}>
+            <div className="postMenu">
               <MoreVert
                 style={{ cursor: "pointer" }}
                 onClick={() => setShowMenu((prev) => !prev)}
               />
-              {/* Dummy menu dropdown */}
+
               {showMenu && (
-                <div className="postDropdownMenu" style={{ position: "absolute", right: 0, top: "2rem", background: "#fff", border: "1px solid #eee", borderRadius: "6px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", zIndex: 10 }}>
-                  <button className="menuItem" onClick={chatWithCreator} style={{ display: "block", width: "100%", padding: "0.5rem 1rem", border: "none", background: "none", textAlign: "left" }}>Chat with Creator</button>
-                  <button className="menuItem" onClick={addToInterestedSkills} style={{ display: "block", width: "100%", padding: "0.5rem 1rem", border: "none", background: "none", textAlign: "left" }}>Add to Interested Skills</button>
-                  {isOwnProfile && <button className="menuItem" onClick={deleteHandler} style={{ display: "block", width: "100%", padding: "0.5rem 1rem", border: "none", background: "none", textAlign: "left", color: "red" }}>Delete Post</button>}
+                <div className="postDropdownMenu">
+                  {!isOwnProfile && <button className="menuItem" onClick={chatWithCreator}>Chat with Creator</button>}
+                  <button className="menuItem" onClick={handleInterestedSkill}>
+                    {isSkillInterested ? "Remove from Interested Skills" : "Add to Interested Skills"}
+                  </button>
+                  {isOwnProfile && <button className="menuItem deleteMenuItem" onClick={deleteHandler}>Delete Post</button>}
                 </div>
               )}
             </div>
@@ -138,7 +158,7 @@ export default function Post({ post }) {
         )}
 
         {/* Title */}
-        <div className="postTitle" style={{ fontWeight: "bold", fontSize: "1.2rem", margin: "0.5rem 0" }}>
+        <div className="postTitle">
           {post.title || "Post Title"}
         </div>
 
@@ -169,9 +189,9 @@ export default function Post({ post }) {
               title={showComments ? "Hide Comments" : "Show Comments"}
             >
               {showComments ? (
-                <ChatBubble style={{ color: "#222", fontSize: 24 }} />
+                <ChatBubble className="postCommentIconActive" />
               ) : (
-                <ChatBubbleOutline style={{ color: "#1976d2", fontSize: 24 }} />
+                <ChatBubbleOutline className="postCommentIconInactive" />
               )}
             </button>
 
