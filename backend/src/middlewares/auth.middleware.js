@@ -7,8 +7,13 @@ const verifyJWT = asyncHandler(async(req, res, next) => {
 
     try {
         const accessToken = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
-        if(!accessToken)
-            throw new ApiError(401, "Unauthorised Access No Token")
+        
+        if(!accessToken) {
+            console.log("No access token found in cookies or headers");
+            console.log("Cookies:", req.cookies);
+            console.log("Authorization header:", req.header("Authorization"));
+            throw new ApiError(401, "No Access Token, Unauthorized")
+        }
         
         const decodedToken = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET)
         if(!decodedToken)
