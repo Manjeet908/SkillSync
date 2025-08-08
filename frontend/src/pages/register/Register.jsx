@@ -1,7 +1,7 @@
 import axiosInstance from "../../api/axios";
 import { useRef } from "react";
 import "./Register.css";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const fullname = useRef();
@@ -25,10 +25,11 @@ export default function Register() {
       };
       try {
         await axiosInstance.post("/users/register", user);
+        alert("Registration successful! Please log in.");
         navigate("/login");
       } catch (err) {
-        console.log(err);
-        alert("Failed to register. Try again.");
+        console.error("Registration error:", err);
+        alert(err.response?.data?.message || "Failed to register. Try again.");
       }
   };
 
@@ -47,6 +48,12 @@ export default function Register() {
               placeholder="Username"
               required
               ref={username}
+              className="loginInput"
+            />
+            <input
+              placeholder="Full Name"
+              required
+              ref={fullname}
               className="loginInput"
             />
             <input

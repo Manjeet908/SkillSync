@@ -7,15 +7,25 @@ import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const email = useRef();
+  const username = useRef();
   const password = useRef();
   const { isFetching, dispatch } = useContext(AuthContext);
   const navigate = useNavigate();
+
   const handleClick = async(e) => {
     e.preventDefault();
+    if((!email.current.value && !username.current.value) || email.current.value === "" && username.current.value === "") {
+      alert("Please enter either email or username.");
+      return;
+    }
+    dispatch({ type: "LOGIN_START" });
+    
     const user = {
-      email: email.current.value,
+      email: email?.current?.value,
+      username: username?.current?.value,
       password: password.current.value,
     };
+
     try {
       const res = await axiosInstance.post("/users/login", user);
       const userDetails = {
@@ -26,7 +36,10 @@ export default function Login() {
       dispatch({ type: "LOGIN_SUCCESS", payload: userDetails });
 
     } catch (err) {
+      console.error("Login error:", err);
       dispatch({ type: "LOGIN_FAILURE", payload: err });
+      // Optional: Add user-friendly error message
+      alert(err.response?.data?.message || "Login failed. Please try again.");
     }
   };
 
@@ -45,9 +58,14 @@ export default function Login() {
             <input
               placeholder="Email"
               type="email"
-              required
               className="loginInput"
               ref={email}
+            />
+            <input
+              placeholder="Username"
+              type="text"
+              className="loginInput"
+              ref={username}
             />
             <input
               placeholder="Password"
