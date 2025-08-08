@@ -11,7 +11,7 @@ body {
     background-size: cover;
     width: 100vw;
     height: 100vh;
-    background: url("/assets/netflix-bg.jpg") center center / cover no-repeat;
+    background: url("/assets/gift/background.jpg") center center / cover no-repeat;
     display: flex;
     align-items: center;
     justify-content: center;

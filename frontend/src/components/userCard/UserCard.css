@@ -1,0 +1,47 @@
+.usercard-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #f7f7f7;
+}
+
+.usercard-user {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.usercard-username {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.usercard-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 12px;
+}
+
+.btn-follow {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 16px;
+}
+
+.btn-unfollow {
+  background: #e53935;
+  color: #fff;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 16px;
+}

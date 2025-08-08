@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../api/axios";
-import "./Skilleditor.css"
+import "./skilleditor.css"
 
 export default function SkillEditor({ user, onUpdate }) {
   const [knownSkills, setKnownSkills] = useState(user.knownSkills || []);
