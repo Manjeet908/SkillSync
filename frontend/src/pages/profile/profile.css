@@ -1,3 +1,71 @@
+/* Edit Bio Feature */
+.editBioBtn {
+    background: rgba(0, 123, 255, 0.08);
+    color: #007bff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 16px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    margin-left: 10px;
+    transition: background 0.2s;
+}
+.editBioBtn:hover {
+    background: rgba(0, 123, 255, 0.18);
+}
+.editBioIcon {
+    font-size: 18px;
+}
+.editBioTextarea {
+    width: 100%;
+    resize: vertical;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 15px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    background: #f8faff;
+    color: #222;
+}
+.editBioActions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    justify-content: center;
+}
+.saveBioBtn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: background 0.2s;
+}
+.saveBioBtn:hover {
+    background: #0056b3;
+}
+.cancelBioBtn {
+    background: #f0f0f0;
+    color: #333;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+.cancelBioBtn:hover {
+    background: #e0e0e0;
+}
 .profile {
     display: flex;
     background-size: cover;
