@@ -2,7 +2,6 @@ import "./sidebar.css";
 import {
   RssFeed,
   Chat,
-  Group,
   Explore,
   Person,
   Favorite,

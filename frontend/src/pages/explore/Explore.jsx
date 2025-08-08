@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './Explore.css';
 import axiosInstance from '../../api/axios';
 import Topbar from "../../components/topbar/Topbar";

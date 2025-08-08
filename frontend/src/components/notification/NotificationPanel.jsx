@@ -1,4 +1,4 @@
-import "./notification.css";
+import "./Notification.css";
 
 const NotificationPanel = ({ notifications, onClear }) => {
   const PF = import.meta.env.VITE_APP_PUBLIC_FOLDER;

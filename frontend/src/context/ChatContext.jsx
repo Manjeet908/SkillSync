@@ -169,7 +169,7 @@ export const ChatProvider = ({ children, privateChatUser = null }) => {
 
         // Listen for registration success
         socket.on('registration_success', (data) => {
-            console.log('Successfully registered for chat:', data);
+            // console.log('Successfully registered for chat:', data);
         });
 
         // Listen for new messages

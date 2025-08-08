@@ -7,7 +7,6 @@ import { User } from './models/user.model.js'
 import { ApiError } from './utils/ApiError.js';
 import jwt from 'jsonwebtoken'
 import cookie from 'cookie'
-import { log } from 'console';
 
 const httpServer = createServer(app)
 
@@ -50,7 +49,7 @@ io.on('connect_error', (error) => {
 })
 
 io.on('connection', (socket) => {
-    console.log('A user connected:', socket.id, 'User:', socket.user.username)
+    // console.log('A user connected:', socket.id, 'User:', socket.user.username)
 
     // Helper function to generate conversation ID for private chats
     const generateConversationId = (userId1, userId2) => {
@@ -74,7 +73,7 @@ io.on('connection', (socket) => {
                 socket.join(`skill-chat:${i}`);
             }
             
-            console.log(`User ${socket.user.username} registered and joined chat rooms`);
+            // console.log(`User ${socket.user.username} registered and joined chat rooms`);
             
             // Emit successful registration
             socket.emit('registration_success', {
@@ -92,7 +91,7 @@ io.on('connection', (socket) => {
     // Handle global chat messages
     socket.on('send_global_message', (data) => {
         try {
-            console.log('Global message from:', socket.user.username, data);
+            // console.log('Global message from:', socket.user.username, data);
             
             // Broadcast to all users in global chat
             socket.to('global-chat').emit('receive_global_message', {
@@ -118,7 +117,7 @@ io.on('connection', (socket) => {
     socket.on('send_skill_message', (data) => {
         try {
             const { skillId, message, messageId } = data;
-            console.log(`Skill message from ${socket.user.username} to skill ${skillId}:`, message);
+            // console.log(`Skill message from ${socket.user.username} to skill ${skillId}:`, message);
             
             // Broadcast to all users in this skill chat room
             socket.to(`skill-chat:${skillId}`).emit('receive_skill_message', {
@@ -147,7 +146,7 @@ io.on('connection', (socket) => {
             const { recipientId, message, messageId } = data;
             const senderId = socket.user._id.toString();
             
-            console.log(`Private message from ${socket.user.username} to user ${recipientId}`);
+            // console.log(`Private message from ${socket.user.username} to user ${recipientId}`);
             
             // Send to recipient's private room
             socket.to(`user:${recipientId}`).emit('receive_private_message', {
@@ -273,7 +272,7 @@ io.on('connection', (socket) => {
 
     // Handle user disconnect
     socket.on('disconnect', () => {
-        console.log('User disconnected:', socket.id, socket.user?.username);
+        // console.log('User disconnected:', socket.id, socket.user?.username);
     });
 
     // Handle socket errors

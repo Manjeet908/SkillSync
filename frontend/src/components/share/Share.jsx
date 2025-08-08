@@ -1,4 +1,4 @@
-import "./share.css";
+import "./Share.css";
 import {
   PermMedia,
   Cancel,

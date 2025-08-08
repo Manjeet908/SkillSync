@@ -1,4 +1,4 @@
-import "./profile.css";
+import "./Profile.css";
 import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useParams } from "react-router";

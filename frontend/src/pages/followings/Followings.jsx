@@ -1,7 +1,7 @@
 import Topbar from "../../components/topbar/Topbar";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Rightbar from "../../components/rightbar/Rightbar";
-import UserCard from "../../components/UserCard/UserCard";
+import UserCard from "../../components/userCard/UserCard";
 import "./Followings.css";
 import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";

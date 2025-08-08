@@ -1,7 +1,7 @@
-import "./rightbar.css";
+import "./Rightbar.css";
 import { useState, useEffect } from "react";
 import axiosInstance from "../../api/axios";
-import UserCard from "../UserCard/UserCard";
+import UserCard from "../userCard/UserCard";
 
 function Rightbar() {
   const [suggestions, setSuggestions] = useState([]);
@@ -22,6 +22,10 @@ function Rightbar() {
     };
     fetchSuggestions();
   }, []);
+
+  if (loading) {
+    return <div className="loading">Loading...</div>;
+  }
 
   return (
     <div className='rightbar'>

@@ -1,5 +1,5 @@
 import { useContext, useRef } from "react";
-import "./login.css";
+import "./Login.css";
 import { AuthContext } from "../../context/AuthContext";
 import { CircularProgress } from "@mui/material";
 import axiosInstance from "../../api/axios";

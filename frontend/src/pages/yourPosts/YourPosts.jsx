@@ -2,7 +2,7 @@ import './YourPosts.css';
 import Topbar from "../../components/topbar/Topbar";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Rightbar from "../../components/rightbar/Rightbar";
-import YourPost from "../../components/YourPost/YourPost";
+import YourPost from "../../components/yourPost/YourPost";
 
 export default function YourPosts() {
   return (

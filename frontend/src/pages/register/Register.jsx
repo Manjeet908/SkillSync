@@ -1,6 +1,6 @@
 import axiosInstance from "../../api/axios";
 import { useRef } from "react";
-import "./register.css";
+import "./Register.css";
 import { useNavigate } from "react-router";
 
 export default function Register() {

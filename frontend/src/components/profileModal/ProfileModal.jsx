@@ -1,4 +1,4 @@
-import "./profileModal.css";
+import "./ProfileModal.css";
 import { useRef, useState } from "react";
 import axiosInstance from "../../api/axios";
 

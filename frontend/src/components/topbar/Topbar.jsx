@@ -1,6 +1,6 @@
 import "./Topbar.css";
 import { useEffect, useState } from "react";
-import { Search, Notifications } from "@mui/icons-material";
+import { Notifications } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
@@ -33,7 +33,7 @@ export default function Topbar() {
 
     if (socket) {
       socket.on('new_notification', (data) => {
-        console.log(data)
+        // console.log(data)
         setNotifications(prev => [data, ...prev]);
         setNotificationCount(prev => prev + 1);
       });

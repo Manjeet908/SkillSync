@@ -26,7 +26,7 @@ export const SocketProvider = ({ children }) => {
             });
 
             socketInstance.on('disconnect', () => {
-                console.log('Disconnected from socket server');
+                // console.log('Disconnected from socket server');
             });
 
             socketInstance.on('connect_error', (error) => {

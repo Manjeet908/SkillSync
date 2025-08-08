@@ -1,3 +1,4 @@
+import './Chat.css';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ChatProvider } from '../../context/ChatContext';
@@ -5,7 +6,6 @@ import RoomSelector from '../../components/chat/RoomSelector';
 import MessageList from '../../components/chat/MessageList';
 import MessageInput from '../../components/chat/MessageInput';
 import Topbar from '../../components/topbar/Topbar';
-import './Chat.css';
 
 const ChatPage = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

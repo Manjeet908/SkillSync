@@ -1,6 +1,6 @@
+import "./Comment.css";
 import { useState, useEffect, useRef } from "react";
 import { Delete } from "@mui/icons-material";
-import "./comment.css";
 import axiosInstance from "../../api/axios";
 
 function Comment({ postId, currentUser }) {
