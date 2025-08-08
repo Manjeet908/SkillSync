@@ -25,11 +25,11 @@ const userSchema = new Schema(
             trim: true
         },
         avatar: {
-            default: "http://localhost:8000/images/default_avatar.jpg",
+            default: "https://res.cloudinary.com/vtubecloud/image/upload/v1754656557/default_avatar_krw1dq.jpg",
             type: String, // cloudinary url
         },
         coverImage: {
-            default: "http://localhost:8000/images/default_coverImage.jpg",
+            default: "https://res.cloudinary.com/vtubecloud/image/upload/v1754656657/default_coverImage_wjpwgl.jpg",
             type: String, // cloudinary url
         },
         bio: {

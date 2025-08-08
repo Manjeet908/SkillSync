@@ -38,6 +38,12 @@ const deleteFromCloudinary = async (url) => {
 
         if(!public_id)
             throw new Error("Invalid URL format")
+        
+        const resource = await cloudinary.api.resource(public_id);
+
+        if (resource.tags.includes('default')) {
+            return;
+        }
 
         const deleteStatus = await cloudinary.uploader.destroy(public_id)
         return deleteStatus

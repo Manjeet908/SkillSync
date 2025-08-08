@@ -10,13 +10,19 @@ import cookie from 'cookie'
 
 const httpServer = createServer(app)
 
+const allowedOrigins = process.env.CORS_ORIGIN 
+    ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+    : ['http://localhost:5173'];
+
 const io = new Server(httpServer, {
     cors: {
-        origin: process.env.CORS_ORIGIN || "http://localhost:5173",
-        credentials: true
+        origin: allowedOrigins,
+        credentials: true,
+        methods: ["GET", "POST"]
     },
     pingTimeout: 60000, 
-    pingInterval: 25000 
+    pingInterval: 25000,
+    transports: ['websocket', 'polling']
 })
 
 // Socket.IO middleware for authentication
