@@ -1,4 +1,4 @@
-import "./post.css";
+import "./Post.css";
 import {
   MoreVert,
   Favorite,
